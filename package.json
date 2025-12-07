@@ -17,6 +17,8 @@
     "db:seed": "node scripts/seed-database.js",
     "verify:setup": "node scripts/verify-setup.js",
     "test:db": "node scripts/test-database.js",
+    "setup:github-vercel": "./scripts/setup-github-vercel.sh",
+    "setup": "./scripts/setup-simple.sh",
     "lighthouse": "lhci autorun",
     "seo:check": "node scripts/check-seo.js",
     "performance:analyze": "node scripts/analyze-performance.js",
