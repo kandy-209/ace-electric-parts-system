@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import SkeletonLoader from '@/components/SkeletonLoader';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function PartsCatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isLoading, setIsLoading] = useState(false);
 
   const categories = [
     { id: 'all', name: 'All', count: 156 },
@@ -128,14 +131,24 @@ export default function PartsCatalogPage() {
           </div>
 
           {/* Parts Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredParts.map((part, index) => (
-              <Link
-                key={part.id}
-                href={`/parts/${part.id}`}
-                className="group card-vercel p-6 animate-fade-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
+          {isLoading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="card-vercel p-6">
+                  <SkeletonLoader variant="card" height="h-48" className="mb-4" />
+                  <SkeletonLoader width="w-24" height="h-6" className="mb-2" />
+                  <SkeletonLoader width="w-full" height="h-4" lines={2} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredParts.map((part, index) => (
+                <ScrollReveal key={part.id} delay={index * 50}>
+                  <Link
+                    href={`/parts/${part.id}`}
+                    className="group card-vercel p-6 block hover-lift"
+                  >
                 {/* Part Image Placeholder */}
                 <div className="aspect-square bg-neutral-900 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                   <div className="text-6xl opacity-20 group-hover:scale-110 transition-transform duration-500">
@@ -171,8 +184,10 @@ export default function PartsCatalogPage() {
                   </svg>
                 </div>
               </Link>
-            ))}
-          </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          )}
 
           {/* Load More */}
           <div className="mt-12 text-center">

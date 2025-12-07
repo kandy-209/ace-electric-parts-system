@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import FormField from '@/components/FormField';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { useToast } from '@/hooks/useToast';
+import Toast from '@/components/Toast';
 
 export default function RFQPage() {
   const [formData, setFormData] = useState({
@@ -13,15 +17,52 @@ export default function RFQPage() {
     quantity: '',
     urgency: 'standard',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const { toasts, showToast, removeToast } = useToast();
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.partDescription.trim()) {
+      newErrors.partDescription = 'Part description is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validate()) {
+      showToast('Please fix the errors in the form', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    setSubmitted(true);
+    
+    try {
+      // TODO: Submit to API
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      showToast('Quote request submitted successfully!', 'success');
+      setIsSubmitting(false);
+      setSubmitted(true);
+    } catch (error) {
+      showToast('Failed to submit request. Please try again.', 'error');
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -61,94 +102,77 @@ export default function RFQPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="card-vercel p-8">
+          <div className="card-vercel p-6 sm:p-8">
             <h2 className="text-lg font-semibold text-white mb-6">Contact Information</h2>
             
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="input-vercel"
-                  placeholder="John Smith"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-2">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="input-vercel"
-                  placeholder="john@company.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-2">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="input-vercel"
-                  placeholder="(209) 555-0123"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-2">
-                  Company
-                </label>
-                <input
-                  type="text"
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="input-vercel"
-                  placeholder="ABC Manufacturing"
-                />
-              </div>
+            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+              <FormField
+                label="Full Name"
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="John Smith"
+                error={errors.name}
+              />
+              <FormField
+                label="Email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="john@company.com"
+                error={errors.email}
+              />
+              <FormField
+                label="Phone"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="(209) 555-0123"
+                error={errors.phone}
+              />
+              <FormField
+                label="Company"
+                name="company"
+                type="text"
+                value={formData.company}
+                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                placeholder="ABC Manufacturing"
+                error={errors.company}
+              />
             </div>
           </div>
 
-          <div className="card-vercel p-8">
+          <div className="card-vercel p-6 sm:p-8">
             <h2 className="text-lg font-semibold text-white mb-6">Part Details</h2>
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-2">
-                  Part Description / Requirements *
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={formData.partDescription}
-                  onChange={(e) => setFormData({ ...formData, partDescription: e.target.value })}
-                  className="input-vercel resize-none"
-                  placeholder="Describe the part you need: manufacturer, part number, specs, application..."
-                />
-              </div>
+            <div className="space-y-4 sm:space-y-6">
+              <FormField
+                label="Part Description / Requirements"
+                name="partDescription"
+                required
+                textarea
+                rows={5}
+                value={formData.partDescription}
+                onChange={(e) => setFormData({ ...formData, partDescription: e.target.value })}
+                placeholder="Describe the part you need: manufacturer, part number, specs, application..."
+                error={errors.partDescription}
+              />
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-2">
-                    Quantity
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.quantity}
-                    onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                    className="input-vercel"
-                    placeholder="1"
-                  />
-                </div>
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                <FormField
+                  label="Quantity"
+                  name="quantity"
+                  type="text"
+                  value={formData.quantity}
+                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                  placeholder="1"
+                  error={errors.quantity}
+                />
                 <div>
                   <label className="block text-sm font-medium text-neutral-400 mb-2">
                     Urgency
@@ -170,21 +194,33 @@ export default function RFQPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full btn-primary py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-primary py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Submitting...
-              </span>
+              <>
+                <LoadingSpinner size="sm" className="border-amber-500" />
+                <span>Submitting...</span>
+              </>
             ) : (
-              'Submit Request'
+              <>
+                <span>Submit Request</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </>
             )}
           </button>
         </form>
+
+        {/* Toast Notifications */}
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            onClose={() => removeToast(toast.id)}
+          />
+        ))}
 
         {/* Contact */}
         <div className="mt-12 text-center">

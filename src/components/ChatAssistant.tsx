@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import LoadingSpinner from './LoadingSpinner';
 
 interface Message {
   id: string;
@@ -42,6 +43,7 @@ export default function ChatAssistant() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
     setIsTyping(true);
 
@@ -49,7 +51,7 @@ export default function ChatAssistant() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input, history: messages }),
+        body: JSON.stringify({ message: currentInput, history: messages }),
       });
 
       const data = await response.json();
@@ -88,16 +90,22 @@ export default function ChatAssistant() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-105 transition-all flex items-center justify-center ${isOpen ? 'hidden' : ''}`}
+        className={`fixed bottom-6 right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-105 active:scale-95 transition-all flex items-center justify-center ${isOpen ? 'hidden' : ''}`}
+        aria-label="Open chat assistant"
       >
         <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
+        {messages.length > 1 && (
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold">
+            {messages.length - 1}
+          </span>
+        )}
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[380px] h-[580px] max-h-[80vh] bg-black border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
+        <div className="fixed bottom-6 right-6 z-50 w-[calc(100vw-3rem)] sm:w-[380px] h-[580px] max-h-[80vh] bg-black border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fade-in-scale">
           {/* Header */}
           <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950">
             <div className="flex items-center gap-3">
@@ -115,6 +123,7 @@ export default function ChatAssistant() {
             <button
               onClick={() => setIsOpen(false)}
               className="text-neutral-500 hover:text-white transition-colors p-1"
+              aria-label="Close chat"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -127,7 +136,7 @@ export default function ChatAssistant() {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
               >
                 <div
                   className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm ${
@@ -141,7 +150,7 @@ export default function ChatAssistant() {
               </div>
             ))}
             {isTyping && (
-              <div className="flex justify-start">
+              <div className="flex justify-start animate-fade-in">
                 <div className="bg-neutral-900 px-4 py-3 rounded-2xl rounded-bl-md">
                   <div className="flex gap-1.5">
                     <span className="w-2 h-2 bg-neutral-600 rounded-full animate-bounce" />
@@ -176,18 +185,24 @@ export default function ChatAssistant() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder="Type a message..."
                 className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-neutral-500 focus:outline-none focus:border-amber-500/50 transition-all"
+                disabled={isTyping}
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="px-4 py-3 bg-amber-500 text-black rounded-xl hover:bg-amber-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-3 bg-amber-500 text-black rounded-xl hover:bg-amber-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[44px]"
+                aria-label="Send message"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
+                {isTyping ? (
+                  <LoadingSpinner size="sm" className="border-black" />
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>

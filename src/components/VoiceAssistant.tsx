@@ -31,7 +31,8 @@ export default function VoiceAssistant() {
         <button
           onClick={startVoiceCall}
           disabled={status === 'connecting'}
-          className="w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-105 transition-all flex items-center justify-center"
+          className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
+          aria-label="Start voice assistant"
         >
           {status === 'connecting' ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -45,7 +46,7 @@ export default function VoiceAssistant() {
 
       {/* Active Call */}
       {isConnected && (
-        <div className="bg-black border border-white/10 rounded-2xl p-4 w-72 animate-fade-in">
+        <div className="bg-black border border-white/10 rounded-2xl p-4 w-[calc(100vw-3rem)] sm:w-72 animate-fade-in">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${isListening ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-500'}`} />
