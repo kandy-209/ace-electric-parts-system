@@ -15,7 +15,7 @@ export default function HomePage() {
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-[100px]" />
         <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[80px]" />
         
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Badge */}
           <ScrollReveal delay={0}>
             <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/5 border border-white/10 text-sm text-neutral-400 hover:bg-white/10 transition-all backdrop-blur-sm">
@@ -26,7 +26,7 @@ export default function HomePage() {
 
           {/* Main Headline */}
           <ScrollReveal delay={100}>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight mb-4 sm:mb-6">
               <span className="gradient-text inline-block hover:scale-105 transition-transform">Industrial</span>
               <br />
               <span className="gradient-text-amber inline-block hover:scale-105 transition-transform">Power Solutions</span>
@@ -35,7 +35,7 @@ export default function HomePage() {
 
           {/* Subtitle */}
           <ScrollReveal delay={200}>
-            <p className="text-lg sm:text-xl text-neutral-400 max-w-2xl mx-auto mb-12 leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-neutral-400 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed px-4">
               Premium electric motors, pumps, and gearboxes.
               <br className="hidden sm:block" />
               Expert repair services with 24/7 emergency support.
@@ -77,17 +77,17 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
         <div className="absolute inset-0 bg-grid opacity-20" />
         
-        <div className="relative z-10 max-w-6xl mx-auto px-6">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <p className="text-amber-500 font-medium mb-4 text-sm uppercase tracking-wider">What We Offer</p>
-              <h2 className="text-3xl sm:text-5xl font-bold gradient-text">
+            <div className="text-center mb-12 sm:mb-16">
+              <p className="text-amber-500 font-medium mb-3 sm:mb-4 text-xs sm:text-sm uppercase tracking-wider">What We Offer</p>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold gradient-text">
                 Complete Industrial Solutions
               </h2>
             </div>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               {
                 icon: '⚡',
@@ -155,8 +155,8 @@ export default function HomePage() {
       <section className="relative py-24 overflow-hidden border-y border-white/5">
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-orange-500/5" />
         
-        <div className="relative z-10 max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {[
               { value: '40+', label: 'Years Experience' },
               { value: '50K+', label: 'Parts in Stock' },
@@ -183,11 +183,11 @@ export default function HomePage() {
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[80px]" />
         
         <ScrollReveal>
-          <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-            <h2 className="text-3xl sm:text-5xl font-bold gradient-text mb-6">
+          <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold gradient-text mb-4 sm:mb-6">
               Ready to Get Started?
             </h2>
-            <p className="text-lg text-neutral-400 mb-10 leading-relaxed">
+            <p className="text-base sm:text-lg text-neutral-400 mb-8 sm:mb-10 leading-relaxed">
               Our AI-powered system finds the right part in seconds.
               <br />Or talk to our experts for custom solutions.
             </p>
@@ -214,8 +214,8 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-16 bg-black">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12 mb-8 sm:mb-12">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">

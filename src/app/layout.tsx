@@ -4,6 +4,7 @@ import './globals.css';
 import Navigation from '@/components/Navigation';
 import ChatAssistant from '@/components/ChatAssistant';
 import VoiceAssistant from '@/components/VoiceAssistant';
+import ResponsiveTest from '@/components/ResponsiveTest';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -89,6 +90,7 @@ export default function RootLayout({
         <main>{children}</main>
         <ChatAssistant />
         <VoiceAssistant />
+        {process.env.NODE_ENV === 'development' && <ResponsiveTest />}
       </body>
     </html>
   );
