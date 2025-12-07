@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import { useToast } from './Toast';
+import { LoadingSpinner } from './LoadingStates';
 
 interface Message {
   id: string;
@@ -11,6 +12,7 @@ interface Message {
 }
 
 export default function ChatAssistant() {
+  const { showToast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -64,7 +66,8 @@ export default function ChatAssistant() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch {
+    } catch (error) {
+      showToast('Failed to send message. Please try again.', 'error');
       setMessages((prev) => [
         ...prev,
         {
@@ -197,7 +200,7 @@ export default function ChatAssistant() {
                 aria-label="Send message"
               >
                 {isTyping ? (
-                  <LoadingSpinner size="sm" className="border-black" />
+                  <LoadingSpinner size="sm" />
                 ) : (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

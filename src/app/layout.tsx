@@ -5,6 +5,9 @@ import Navigation from '@/components/Navigation';
 import ChatAssistant from '@/components/ChatAssistant';
 import VoiceAssistant from '@/components/VoiceAssistant';
 import ResponsiveTest from '@/components/ResponsiveTest';
+import { ToastProvider } from '@/components/Toast';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import SkipToContent from '@/components/SkipToContent';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -86,11 +89,16 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <Navigation />
-        <main>{children}</main>
-        <ChatAssistant />
-        <VoiceAssistant />
-        {process.env.NODE_ENV === 'development' && <ResponsiveTest />}
+        <ErrorBoundary>
+          <ToastProvider>
+            <SkipToContent />
+            <Navigation />
+            <main id="main-content">{children}</main>
+            <ChatAssistant />
+            <VoiceAssistant />
+            {process.env.NODE_ENV === 'development' && <ResponsiveTest />}
+          </ToastProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

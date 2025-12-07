@@ -2,10 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import FormField from '@/components/FormField';
-import LoadingSpinner from '@/components/LoadingSpinner';
-import { useToast } from '@/hooks/useToast';
-import Toast from '@/components/Toast';
+import { useToast } from '@/components/Toast';
+import { ButtonLoader, LoadingSpinner } from '@/components/LoadingStates';
 
 export default function RFQPage() {
   const [formData, setFormData] = useState({
@@ -20,7 +18,7 @@ export default function RFQPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const { toasts, showToast, removeToast } = useToast();
+  const { showToast } = useToast();
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -106,44 +104,60 @@ export default function RFQPage() {
             <h2 className="text-lg font-semibold text-white mb-6">Contact Information</h2>
             
             <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-              <FormField
-                label="Full Name"
-                name="name"
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="John Smith"
-                error={errors.name}
-              />
-              <FormField
-                label="Email"
-                name="email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="john@company.com"
-                error={errors.email}
-              />
-              <FormField
-                label="Phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="(209) 555-0123"
-                error={errors.phone}
-              />
-              <FormField
-                label="Company"
-                name="company"
-                type="text"
-                value={formData.company}
-                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                placeholder="ABC Manufacturing"
-                error={errors.company}
-              />
+              <div>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">
+                  Full Name <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="John Smith"
+                  className={`input-vercel ${errors.name ? 'border-red-500/50' : ''}`}
+                />
+                {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">
+                  Email <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="john@company.com"
+                  className={`input-vercel ${errors.email ? 'border-red-500/50' : ''}`}
+                />
+                {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Phone</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="(209) 555-0123"
+                  className={`input-vercel ${errors.phone ? 'border-red-500/50' : ''}`}
+                />
+                {errors.phone && <p className="mt-1 text-xs text-red-400">{errors.phone}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Company</label>
+                <input
+                  type="text"
+                  name="company"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  placeholder="ABC Manufacturing"
+                  className={`input-vercel ${errors.company ? 'border-red-500/50' : ''}`}
+                />
+                {errors.company && <p className="mt-1 text-xs text-red-400">{errors.company}</p>}
+              </div>
             </div>
           </div>
 
@@ -151,28 +165,35 @@ export default function RFQPage() {
             <h2 className="text-lg font-semibold text-white mb-6">Part Details</h2>
             
             <div className="space-y-4 sm:space-y-6">
-              <FormField
-                label="Part Description / Requirements"
-                name="partDescription"
-                required
-                textarea
-                rows={5}
-                value={formData.partDescription}
-                onChange={(e) => setFormData({ ...formData, partDescription: e.target.value })}
-                placeholder="Describe the part you need: manufacturer, part number, specs, application..."
-                error={errors.partDescription}
-              />
+              <div>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">
+                  Part Description / Requirements <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  name="partDescription"
+                  required
+                  rows={5}
+                  value={formData.partDescription}
+                  onChange={(e) => setFormData({ ...formData, partDescription: e.target.value })}
+                  placeholder="Describe the part you need: manufacturer, part number, specs, application..."
+                  className={`input-vercel resize-none ${errors.partDescription ? 'border-red-500/50' : ''}`}
+                />
+                {errors.partDescription && <p className="mt-1 text-xs text-red-400">{errors.partDescription}</p>}
+              </div>
 
               <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-                <FormField
-                  label="Quantity"
-                  name="quantity"
-                  type="text"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  placeholder="1"
-                  error={errors.quantity}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">Quantity</label>
+                  <input
+                    type="text"
+                    name="quantity"
+                    value={formData.quantity}
+                    onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                    placeholder="1"
+                    className={`input-vercel ${errors.quantity ? 'border-red-500/50' : ''}`}
+                  />
+                  {errors.quantity && <p className="mt-1 text-xs text-red-400">{errors.quantity}</p>}
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-neutral-400 mb-2">
                     Urgency
@@ -196,31 +217,9 @@ export default function RFQPage() {
             disabled={isSubmitting}
             className="w-full btn-primary py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isSubmitting ? (
-              <>
-                <LoadingSpinner size="sm" className="border-amber-500" />
-                <span>Submitting...</span>
-              </>
-            ) : (
-              <>
-                <span>Submit Request</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </>
-            )}
+            {isSubmitting ? <ButtonLoader /> : 'Submit Request'}
           </button>
         </form>
-
-        {/* Toast Notifications */}
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={() => removeToast(toast.id)}
-          />
-        ))}
 
         {/* Contact */}
         <div className="mt-12 text-center">

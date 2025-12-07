@@ -712,6 +712,68 @@ select {
   }
 }
 
+/* Performance optimizations */
+@media (prefers-reduced-motion: no-preference) {
+  /* GPU acceleration for smooth animations */
+  .card-vercel,
+  .btn-primary,
+  .btn-secondary {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}
+
+/* Improved image loading */
+img {
+  content-visibility: auto;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Focus improvements for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--ds-amber-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ds-amber-500);
+  color: #000;
+  padding: 8px 16px;
+  z-index: 100;
+  text-decoration: none;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
+
 /* Mobile-first improvements */
 @media (max-width: 640px) {
   /* Larger touch targets */

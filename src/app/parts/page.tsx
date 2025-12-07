@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import SkeletonLoader from '@/components/SkeletonLoader';
+import { useDebounce } from '@/hooks/useDebounce';
+import { CardSkeleton } from '@/components/LoadingStates';
 import ScrollReveal from '@/components/ScrollReveal';
 
 export default function PartsCatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
   const categories = [
     { id: 'all', name: 'All', count: 156 },
@@ -80,27 +82,27 @@ export default function PartsCatalogPage() {
         <div className="absolute inset-0 bg-grid opacity-30" />
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[100px]" />
         
-        <div className="relative z-10 max-w-6xl mx-auto px-6">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-4xl sm:text-6xl font-bold mb-6">
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 sm:mb-6">
               <span className="gradient-text">Parts</span>
               <span className="text-white"> Catalog</span>
             </h1>
-            <p className="text-lg text-neutral-400 mb-8">
+            <p className="text-base sm:text-lg text-neutral-400 mb-6 sm:mb-8">
               Search our extensive inventory of motors, pumps, gearboxes, and controls.
             </p>
             
             {/* Search */}
             <div className="relative">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
-                type="text"
+                type="search"
                 placeholder="Search by part number, name, or specs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-neutral-500 focus:outline-none focus:border-amber-500/50 focus:bg-white/8 transition-all"
+                className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-neutral-500 focus:outline-none focus:border-amber-500/50 focus:bg-white/8 transition-all text-base"
               />
             </div>
           </div>
@@ -108,10 +110,10 @@ export default function PartsCatalogPage() {
       </section>
 
       {/* Catalog */}
-      <section className="py-12">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="py-8 sm:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Categories */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 sm:mb-8 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -134,11 +136,7 @@ export default function PartsCatalogPage() {
           {isLoading ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="card-vercel p-6">
-                  <SkeletonLoader variant="card" height="h-48" className="mb-4" />
-                  <SkeletonLoader width="w-24" height="h-6" className="mb-2" />
-                  <SkeletonLoader width="w-full" height="h-4" lines={2} />
-                </div>
+                <CardSkeleton key={i} />
               ))}
             </div>
           ) : (
@@ -149,41 +147,41 @@ export default function PartsCatalogPage() {
                     href={`/parts/${part.id}`}
                     className="group card-vercel p-6 block hover-lift"
                   >
-                {/* Part Image Placeholder */}
-                <div className="aspect-square bg-neutral-900 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-                  <div className="text-6xl opacity-20 group-hover:scale-110 transition-transform duration-500">
-                    {part.category === 'motors' && '⚡'}
-                    {part.category === 'pumps' && '💧'}
-                    {part.category === 'gearboxes' && '⚙️'}
-                    {part.category === 'controls' && '🎛️'}
-                  </div>
-                </div>
+                    {/* Part Image Placeholder */}
+                    <div className="aspect-square bg-neutral-900 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                      <div className="text-6xl opacity-20 group-hover:scale-110 transition-transform duration-500">
+                        {part.category === 'motors' && '⚡'}
+                        {part.category === 'pumps' && '💧'}
+                        {part.category === 'gearboxes' && '⚙️'}
+                        {part.category === 'controls' && '🎛️'}
+                      </div>
+                    </div>
 
-                {/* Badge */}
-                <div className="mb-3">
-                  <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                    part.badgeColor === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' :
-                    part.badgeColor === 'amber' ? 'bg-amber-500/10 text-amber-400' :
-                    'bg-blue-500/10 text-blue-400'
-                  }`}>
-                    {part.badge}
-                  </span>
-                </div>
+                    {/* Badge */}
+                    <div className="mb-3">
+                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                        part.badgeColor === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' :
+                        part.badgeColor === 'amber' ? 'bg-amber-500/10 text-amber-400' :
+                        'bg-blue-500/10 text-blue-400'
+                      }`}>
+                        {part.badge}
+                      </span>
+                    </div>
 
-                {/* Info */}
-                <h3 className="font-semibold text-white mb-1 group-hover:text-amber-400 transition-colors">
-                  {part.name}
-                </h3>
-                <p className="text-sm text-neutral-500">{part.specs}</p>
+                    {/* Info */}
+                    <h3 className="font-semibold text-white mb-1 group-hover:text-amber-400 transition-colors">
+                      {part.name}
+                    </h3>
+                    <p className="text-sm text-neutral-500">{part.specs}</p>
 
-                {/* Action */}
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-sm text-amber-500 font-medium">Request Quote</span>
-                  <svg className="w-4 h-4 text-neutral-600 group-hover:text-amber-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
-              </Link>
+                    {/* Action */}
+                    <div className="mt-4 flex items-center justify-between">
+                      <span className="text-sm text-amber-500 font-medium">Request Quote</span>
+                      <svg className="w-4 h-4 text-neutral-600 group-hover:text-amber-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+                  </Link>
                 </ScrollReveal>
               ))}
             </div>
