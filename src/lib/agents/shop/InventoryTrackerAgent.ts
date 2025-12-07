@@ -20,7 +20,7 @@ export class InventoryTrackerAgent extends BaseAgent {
 
       if (action === 'check_reorder') {
         // TODO: Query database for parts below reorder threshold
-        const reorderAlerts = [];
+        const reorderAlerts: unknown[] = [];
         
         return {
           success: true,

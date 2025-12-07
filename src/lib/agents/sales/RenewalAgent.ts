@@ -20,7 +20,7 @@ export class RenewalAgent extends BaseAgent {
 
       if (action === 'get_upcoming_renewals') {
         // TODO: Query contracts expiring in next 30/60/90 days
-        const upcomingRenewals = [];
+        const upcomingRenewals: unknown[] = [];
         return {
           success: true,
           data: {

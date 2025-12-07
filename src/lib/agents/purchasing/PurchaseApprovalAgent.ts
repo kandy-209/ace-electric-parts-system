@@ -22,7 +22,7 @@ export class PurchaseApprovalAgent extends BaseAgent {
         // TODO: Determine required approval level based on amount
         // Typical levels: <$500 auto-approve, $500-$5000 manager, $5000+ director
         let approval_level = 'auto';
-        let approvers = [];
+        const approvers: string[] = [];
 
         if (po_amount >= 5000) {
           approval_level = 'director';

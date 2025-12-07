@@ -108,4 +108,5 @@ export function registerAllAgents() {
 // Export agent registry and orchestrator
 export { agentRegistry } from './base/AgentRegistry';
 export { orchestrator } from './base/AgentOrchestrator';
-export { BaseAgent, AgentInput, AgentOutput } from './base/Agent';
+export { BaseAgent } from './base/Agent';
+export type { AgentInput, AgentOutput } from './base/Agent';

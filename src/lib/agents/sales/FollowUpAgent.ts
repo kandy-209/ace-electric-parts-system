@@ -20,7 +20,7 @@ export class FollowUpAgent extends BaseAgent {
 
       if (action === 'get_pending_followups') {
         // TODO: Query quotes needing follow-up (3, 7, 14, 30 days since sent)
-        const followups = [];
+        const followups: unknown[] = [];
         return {
           success: true,
           data: { pending_followups: followups },

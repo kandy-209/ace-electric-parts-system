@@ -20,7 +20,7 @@ export class WarrantyTrackerAgent extends BaseAgent {
 
       if (action === 'check_expiring') {
         // TODO: Query database for warranties expiring in next 30/60/90 days
-        const expiringWarranties = [];
+        const expiringWarranties: unknown[] = [];
         
         return {
           success: true,
