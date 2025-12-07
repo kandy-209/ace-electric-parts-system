@@ -15,6 +15,7 @@
     "scrape:status": "node scripts/scrape-status.js",
     "db:migrate": "supabase db push",
     "db:seed": "node scripts/seed-database.js",
+    "setup:env": "node scripts/setup-env.js",
     "verify:setup": "node scripts/verify-setup.js",
     "test:db": "node scripts/test-database.js",
     "verify:integration": "./scripts/verify-integration.sh",
