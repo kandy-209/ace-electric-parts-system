@@ -17,6 +17,7 @@
     "db:seed": "node scripts/seed-database.js",
     "setup:env": "node scripts/setup-env.js",
     "vercel:env": "./scripts/add-vercel-env.sh",
+    "migrate:db": "./scripts/run-migrations.sh",
     "verify:setup": "node scripts/verify-setup.js",
     "test:db": "node scripts/test-database.js",
     "verify:integration": "./scripts/verify-integration.sh",
