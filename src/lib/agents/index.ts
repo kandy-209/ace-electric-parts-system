@@ -6,21 +6,23 @@ import { RepairWorkflowAgent } from './shop/RepairWorkflowAgent';
 import { WarrantyTrackerAgent } from './shop/WarrantyTrackerAgent';
 import { PartsIDAgent } from './shop/PartsIDAgent';
 import { InventoryTrackerAgent } from './shop/InventoryTrackerAgent';
+import { MotorReliabilityTestingAgent } from './shop/MotorReliabilityTestingAgent';
+import { JobDocumentationAgent } from './shop/JobDocumentationAgent';
+import { GeneratorPumpReportAgent } from './shop/GeneratorPumpReportAgent';
+import { SafetyComplianceAgent } from './shop/SafetyComplianceAgent';
 
 // Register all agents
 export function registerAllAgents() {
-  // Shop & Repair Agents
+  // Shop & Repair Agents (9 agents - ALL COMPLETE!)
   agentRegistry.register(new ShopQuotingAgent());
   agentRegistry.register(new RepairWorkflowAgent());
   agentRegistry.register(new WarrantyTrackerAgent());
   agentRegistry.register(new PartsIDAgent());
   agentRegistry.register(new InventoryTrackerAgent());
-  
-  // TODO: Register remaining agents as they're built
-  // Motor Reliability Testing Agent
-  // Job Documentation Agent
-  // Generator & Pump Report Agent
-  // Safety Compliance Agent
+  agentRegistry.register(new MotorReliabilityTestingAgent());
+  agentRegistry.register(new JobDocumentationAgent());
+  agentRegistry.register(new GeneratorPumpReportAgent());
+  agentRegistry.register(new SafetyComplianceAgent());
   // Field Service Agents (6)
   // Sales & Customer Agents (8)
   // Purchasing & Vendor Agents (4)
