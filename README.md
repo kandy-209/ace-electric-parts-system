@@ -1,36 +1,185 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ace Electric Motor & Pump Co. - Complete AI-Powered System
 
-## Getting Started
+World-class Next.js application integrating **37 AI agents** across all business operations.
 
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📋 Project Status
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ✅ Phase 1: Foundation & Agent Framework (COMPLETE)
+- ✅ Agent framework architecture (BaseAgent, Registry, Orchestrator)
+- ✅ Database schema (all tables created)
+- ✅ Agent API endpoints
+- ✅ Admin dashboard foundation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ✅ Phase 2: Shop & Repair Agents (COMPLETE - 9/9)
+1. ✅ Shop Quoting Agent - Builds Good/Better/Best repair quotes
+2. ✅ Repair Workflow Agent - Guides techs through SOPs
+3. ✅ Warranty Tracker Agent - Tracks warranties & flags expirations
+4. ✅ Parts ID Agent - Recognizes parts from photos/labels
+5. ✅ Inventory Tracker Agent - Manages job stock & reorder thresholds
+6. ✅ Motor Reliability Testing Agent - Packages test results into reports
+7. ✅ Job Documentation Agent - Organizes pictures/videos/reports
+8. ✅ Generator & Pump Report Agent - Ensures correct report templates
+9. ✅ Safety Compliance Agent - Confirms hazard analysis, lockout/tagout, signatures
 
-## Learn More
+### 🚧 Phase 3: Field Service Agents (0/6)
+- Field Service Quoting Agent
+- Dispatch Agent
+- Site Safety Agent
+- Field Documentation Agent
+- Alignment & Balancing Agent
+- Emergency Response Agent
 
-To learn more about Next.js, take a look at the following resources:
+### 🚧 Phase 4: Sales & Customer Agents (0/8)
+- Sales Quoting Agent
+- Installation Add-On Agent
+- Customer Portal Agent
+- Follow-Up Agent
+- Renewal Agent
+- Customer Training Agent
+- Marketing Campaign Agent
+- Reseller Support Agent
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🚧 Phase 5: Purchasing & Vendor Agents (0/4)
+- Procurement Agent
+- Vendor Tracker Agent
+- Obsolescence Agent
+- Purchase Approval Agent
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🚧 Phase 6: Reliability & Predictive Agents (0/5)
+- Predictive Maintenance Agent
+- Root Cause Analysis Agent
+- Condition Monitoring Agent
+- Baseline Tracking Agent
+- Failure Pattern Agent
 
-## Deploy on Vercel
+### 🚧 Phase 7: Training & Internal Support Agents (0/5)
+- Training Curriculum Agent
+- Testing & Quiz Agent
+- Lab Setup Agent
+- Employee Onboarding Agent
+- Performance Coaching Agent
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework**: Next.js 16.0.7 + React 19.0.1
+- **Database**: Supabase PostgreSQL Pro
+- **AI**: OpenAI GPT-4o (structured outputs)
+- **Voice**: Vapi.ai v2
+- **Scraping**: Puppeteer 24.32.0+ / Playwright
+- **OCR**: Tesseract.js 6.0.1+
+- **PDF**: pdf-parse 2.4.5+ / React-PDF 10.2.0+
+- **Caching**: Upstash Redis
+- **Queue**: Inngest v3+
+- **CRM**: GoHighLevel API
+- **Validation**: Zod 4.1.13+
+- **Styling**: Tailwind CSS 4.0+
+
+## 📁 Project Structure
+
+```
+ace-electric-parts-system/
+├── src/
+│   ├── app/
+│   │   ├── admin/          # Admin dashboards
+│   │   ├── api/            # API routes
+│   │   ├── parts/          # Public parts catalog
+│   │   └── vendors/        # Vendor portal
+│   ├── lib/
+│   │   ├── agents/         # All 37 AI agents
+│   │   ├── database/      # Database client & schema
+│   │   ├── import/        # Data import system
+│   │   ├── scraping/      # Web scraping engine
+│   │   └── ...
+│   └── components/        # React components
+├── supabase/
+│   └── migrations/        # Database migrations
+└── docs/                  # Documentation
+```
+
+## 🔧 Environment Variables
+
+Copy `.env.example` to `.env` and fill in your credentials:
+
+```bash
+cp .env.example .env
+```
+
+Required variables:
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `OPENAI_API_KEY` - OpenAI API key
+- `NEXT_PUBLIC_APP_URL` - Your app URL
+
+## 📊 Database
+
+Run migrations:
+
+```bash
+npm run db:migrate
+```
+
+## 🤖 Using Agents
+
+All agents are accessible via the API:
+
+```typescript
+// Execute an agent
+const response = await fetch('/api/agents', {
+  method: 'POST',
+  body: JSON.stringify({
+    agent_id: 'shop-quoting',
+    input: {
+      customer_name: 'ABC Company',
+      motor_type: 'Electric Motor',
+      repair_scope: 'Rewind and rebuild'
+    }
+  })
+});
+```
+
+## 📝 Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run import:excel` - Import Excel file via CLI
+- `npm run vendors:discover` - Start vendor discovery
+- `npm run scrape:start` - Start web scraping job
+- `npm run db:migrate` - Run database migrations
+
+## 🎯 Next Steps
+
+1. Set up Supabase database and run migrations
+2. Configure environment variables
+3. Build remaining agents (28 more to go!)
+4. Implement parts catalog with SEO
+5. Build vendor portal and RFQ system
+6. Add chat and voice assistants
+
+## 📚 Documentation
+
+- [AI Agents Roadmap](./docs/AI_AGENTS_ROADMAP.md)
+- [Database Schema](./supabase/migrations/001_create_tables.sql)
+
+## 🤝 Contributing
+
+This is a private project for Ace Electric Motor & Pump Co.
+
+## 📄 License
+
+Proprietary - All rights reserved

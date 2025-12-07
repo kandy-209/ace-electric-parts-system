@@ -1,6 +1,6 @@
 // Excel/CSV Parser - Parse Excel and CSV files
 
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx';
 
 export interface ParsedRow {
   [key: string]: any;
