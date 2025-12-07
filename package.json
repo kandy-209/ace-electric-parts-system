@@ -17,6 +17,7 @@
     "db:seed": "node scripts/seed-database.js",
     "verify:setup": "node scripts/verify-setup.js",
     "test:db": "node scripts/test-database.js",
+    "verify:integration": "./scripts/verify-integration.sh",
     "setup:github-vercel": "./scripts/setup-github-vercel.sh",
     "setup": "./scripts/setup-simple.sh",
     "lighthouse": "lhci autorun",
