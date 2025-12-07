@@ -15,7 +15,7 @@ export default function ChatAssistant() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hi! I\'m the Ace Electric assistant. I can help you find parts, get quotes, check order status, or answer questions about motors, pumps, and gearboxes. How can I help you today?',
+      content: 'Hi! I can help you find parts, get quotes, or answer questions about motors, pumps, and gearboxes. How can I assist you?',
       timestamp: new Date(),
     },
   ]);
@@ -57,7 +57,7 @@ export default function ChatAssistant() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || 'I apologize, but I couldn\'t process that request. Please try again or call us at (209) 555-1234.',
+        content: data.response || 'I couldn\'t process that. Please try again.',
         timestamp: new Date(),
       };
 
@@ -68,7 +68,7 @@ export default function ChatAssistant() {
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: 'I\'m having trouble connecting. Please try again or call us at (209) 555-1234 for immediate assistance.',
+          content: 'Having trouble connecting. Call us at (209) 555-1234.',
           timestamp: new Date(),
         },
       ]);
@@ -79,9 +79,8 @@ export default function ChatAssistant() {
 
   const quickActions = [
     { label: 'Find a Part', query: 'I need help finding a part' },
-    { label: 'Get a Quote', query: 'I want to request a quote' },
+    { label: 'Get Quote', query: 'I want to request a quote' },
     { label: 'Check Stock', query: 'Is this part in stock?' },
-    { label: 'Talk to Sales', query: 'I\'d like to speak with someone' },
   ];
 
   return (
@@ -89,30 +88,33 @@ export default function ChatAssistant() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-50 w-16 h-16 bg-amber-500 rounded-full shadow-lg hover:bg-amber-400 transition-all hover:scale-110 flex items-center justify-center ${isOpen ? 'hidden' : ''}`}
+        className={`fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-105 transition-all flex items-center justify-center ${isOpen ? 'hidden' : ''}`}
       >
-        <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
       </button>
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] max-h-[80vh] bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 flex flex-col overflow-hidden">
+        <div className="fixed bottom-6 right-6 z-50 w-[380px] h-[580px] max-h-[80vh] bg-black border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
           {/* Header */}
-          <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-neutral-950">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="text-xl">⚡</span>
+              <div className="w-9 h-9 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">
+                <span className="text-sm font-bold text-black">A</span>
               </div>
               <div>
-                <h3 className="font-semibold text-slate-900">Ace Electric Assistant</h3>
-                <p className="text-xs text-slate-700">Powered by AI</p>
+                <h3 className="font-semibold text-white text-sm">Ace Assistant</h3>
+                <p className="text-xs text-emerald-400 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                  Online
+                </p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-slate-900 hover:bg-white/20 rounded-lg p-2 transition-colors"
+              className="text-neutral-500 hover:text-white transition-colors p-1"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -128,23 +130,23 @@ export default function ChatAssistant() {
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm ${
                     msg.role === 'user'
-                      ? 'bg-amber-500 text-slate-900'
-                      : 'bg-slate-800 text-white'
+                      ? 'bg-amber-500 text-black rounded-br-md'
+                      : 'bg-neutral-900 text-white rounded-bl-md'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                 </div>
               </div>
             ))}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-slate-800 px-4 py-3 rounded-2xl">
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" />
-                    <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                    <span className="w-2 h-2 bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="bg-neutral-900 px-4 py-3 rounded-2xl rounded-bl-md">
+                  <div className="flex gap-1.5">
+                    <span className="w-2 h-2 bg-neutral-600 rounded-full animate-bounce" />
+                    <span className="w-2 h-2 bg-neutral-600 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+                    <span className="w-2 h-2 bg-neutral-600 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
                   </div>
                 </div>
               </div>
@@ -154,14 +156,12 @@ export default function ChatAssistant() {
 
           {/* Quick Actions */}
           {messages.length <= 2 && (
-            <div className="px-4 pb-2 flex flex-wrap gap-2">
+            <div className="px-4 pb-3 flex flex-wrap gap-2">
               {quickActions.map((action) => (
                 <button
                   key={action.label}
-                  onClick={() => {
-                    setInput(action.query);
-                  }}
-                  className="px-3 py-1.5 text-xs bg-slate-800 text-slate-300 rounded-full hover:bg-slate-700 transition-colors"
+                  onClick={() => setInput(action.query)}
+                  className="px-3 py-1.5 text-xs bg-white/5 text-neutral-400 rounded-full hover:bg-white/10 hover:text-white transition-all border border-white/5"
                 >
                   {action.label}
                 </button>
@@ -170,20 +170,20 @@ export default function ChatAssistant() {
           )}
 
           {/* Input */}
-          <div className="p-4 border-t border-slate-800">
+          <div className="p-4 border-t border-white/10 bg-neutral-950">
             <div className="flex gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Type your message..."
-                className="flex-1 px-4 py-3 bg-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                placeholder="Type a message..."
+                className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-neutral-500 focus:outline-none focus:border-amber-500/50 transition-all"
               />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="px-4 py-3 bg-amber-500 text-slate-900 rounded-xl hover:bg-amber-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-3 bg-amber-500 text-black rounded-xl hover:bg-amber-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -196,4 +196,3 @@ export default function ChatAssistant() {
     </>
   );
 }
-

@@ -1,41 +1,31 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 
-// Generate SEO metadata for each part
 export async function generateMetadata({ params }: { params: Promise<{ partId: string }> }): Promise<Metadata> {
   const { partId } = await params;
-  // TODO: Fetch part from database
   return {
-    title: `${partId.toUpperCase()} - Industrial Parts | Ace Electric Motor`,
-    description: `View specifications, pricing, and availability for ${partId}. Request a quote from Ace Electric Motor and Pump Company in Stockton, CA.`,
-    openGraph: {
-      title: `${partId.toUpperCase()} | Ace Electric Motor`,
-      description: `Industrial part specifications and pricing`,
-      type: 'website',
-    },
+    title: `${partId.toUpperCase()} - Parts`,
+    description: `Specifications and pricing for ${partId}. Request a quote from Ace Electric Motor.`,
   };
 }
 
-// Static params for popular parts (for SEO pre-rendering)
 export async function generateStaticParams() {
-  // TODO: Fetch popular parts from database
   return [
-    { partId: 'mtr-001' },
-    { partId: 'pmp-001' },
-    { partId: 'gbx-001' },
+    { partId: 'mtr-215t-10hp' },
+    { partId: 'mtr-324t-25hp' },
+    { partId: 'pmp-cent-2x3' },
   ];
 }
 
 export default async function PartDetailPage({ params }: { params: Promise<{ partId: string }> }) {
   const { partId } = await params;
   
-  // Demo part data - will be fetched from database
   const part = {
     id: partId,
     name: 'NEMA 215T Electric Motor',
     manufacturer: 'US Motors',
     category: 'Electric Motors',
-    description: 'Premium efficiency three-phase induction motor designed for industrial applications. Features include cast iron frame, sealed bearings, and Class F insulation.',
+    description: 'Premium efficiency three-phase induction motor for industrial applications.',
     specs: [
       { label: 'Horsepower', value: '10 HP' },
       { label: 'Voltage', value: '230/460V' },
@@ -56,65 +46,47 @@ export default async function PartDetailPage({ params }: { params: Promise<{ par
     leadTime: '1-2 business days',
   };
 
-  // JSON-LD structured data for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: part.name,
     description: part.description,
-    brand: {
-      '@type': 'Brand',
-      name: part.manufacturer,
-    },
-    offers: {
-      '@type': 'Offer',
-      availability: 'https://schema.org/InStock',
-      seller: {
-        '@type': 'Organization',
-        name: 'Ace Electric Motor and Pump Company',
-        address: {
-          '@type': 'PostalAddress',
-          addressLocality: 'Stockton',
-          addressRegion: 'CA',
-        },
-      },
-    },
+    brand: { '@type': 'Brand', name: part.manufacturer },
   };
 
   return (
     <>
-      {/* JSON-LD for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-black pt-16">
         {/* Breadcrumb */}
-        <nav className="max-w-7xl mx-auto px-4 py-4">
-          <ol className="flex items-center space-x-2 text-sm text-slate-400">
-            <li><Link href="/" className="hover:text-amber-400">Home</Link></li>
+        <nav className="max-w-6xl mx-auto px-6 py-4">
+          <ol className="flex items-center gap-2 text-sm text-neutral-500">
+            <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
             <li>/</li>
-            <li><Link href="/parts" className="hover:text-amber-400">Parts</Link></li>
+            <li><Link href="/parts" className="hover:text-white transition-colors">Parts</Link></li>
             <li>/</li>
             <li className="text-white">{part.id.toUpperCase()}</li>
           </ol>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="grid lg:grid-cols-2 gap-12">
-            {/* Product Image */}
-            <div className="bg-white/5 rounded-3xl border border-white/10 aspect-square flex items-center justify-center">
-              <span className="text-9xl opacity-30">⚙️</span>
+            {/* Image */}
+            <div className="card-vercel aspect-square flex items-center justify-center">
+              <span className="text-9xl opacity-10">⚡</span>
             </div>
 
-            {/* Product Info */}
-            <div>
+            {/* Info */}
+            <div className="animate-fade-in">
               <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-amber-500/20 text-amber-400 text-sm rounded-full">
+                <span className="badge">
                   {part.category}
                 </span>
-                <span className="px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
+                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400">
                   {part.availability}
                 </span>
               </div>
@@ -122,64 +94,64 @@ export default async function PartDetailPage({ params }: { params: Promise<{ par
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
                 {part.name}
               </h1>
-              <p className="text-slate-400 mb-6">
-                By {part.manufacturer} • Part #{part.id.toUpperCase()}
+              <p className="text-neutral-500 mb-6">
+                By {part.manufacturer} • {part.id.toUpperCase()}
               </p>
 
-              <p className="text-slate-300 mb-8">
+              <p className="text-neutral-400 mb-8 leading-relaxed">
                 {part.description}
               </p>
 
               {/* Quick Specs */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-3 mb-8">
                 {part.specs.slice(0, 4).map((spec) => (
-                  <div key={spec.label} className="bg-white/5 rounded-xl p-4">
-                    <p className="text-slate-400 text-sm">{spec.label}</p>
-                    <p className="text-white font-semibold">{spec.value}</p>
+                  <div key={spec.label} className="card-vercel p-4">
+                    <p className="text-xs text-neutral-500 mb-1">{spec.label}</p>
+                    <p className="text-white font-medium">{spec.value}</p>
                   </div>
                 ))}
               </div>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4 mb-8">
+              {/* CTA */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
                 <Link
                   href={`/rfq?part=${part.id}`}
-                  className="flex-1 sm:flex-none px-8 py-4 bg-amber-500 text-slate-900 font-semibold rounded-xl hover:bg-amber-400 transition-colors text-center"
+                  className="btn-primary flex-1 py-4 text-center"
                 >
                   Request Quote
                 </Link>
-                <button className="flex-1 sm:flex-none px-8 py-4 bg-white/10 text-white font-semibold rounded-xl hover:bg-white/20 transition-colors">
+                <button className="btn-secondary flex-1 py-4">
                   Add to Inquiry
                 </button>
               </div>
 
-              <p className="text-slate-400 text-sm">
+              <p className="text-sm text-neutral-500">
                 📦 Lead Time: {part.leadTime}
               </p>
             </div>
           </div>
 
-          {/* Full Specifications */}
-          <section className="mt-16">
-            <h2 className="text-2xl font-bold text-white mb-6">Full Specifications</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white/5 rounded-2xl border border-white/10 p-6">
-                <h3 className="text-lg font-semibold text-amber-400 mb-4">Electrical</h3>
+          {/* Full Specs */}
+          <section className="mt-16 pt-16 border-t border-white/5">
+            <h2 className="text-2xl font-bold text-white mb-8">Specifications</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="card-vercel p-6">
+                <h3 className="text-sm font-semibold text-amber-400 mb-4 uppercase tracking-wider">Electrical</h3>
                 <dl className="space-y-3">
                   {part.specs.map((spec) => (
-                    <div key={spec.label} className="flex justify-between">
-                      <dt className="text-slate-400">{spec.label}</dt>
+                    <div key={spec.label} className="flex justify-between text-sm">
+                      <dt className="text-neutral-500">{spec.label}</dt>
                       <dd className="text-white font-medium">{spec.value}</dd>
                     </div>
                   ))}
                 </dl>
               </div>
-              <div className="bg-white/5 rounded-2xl border border-white/10 p-6">
-                <h3 className="text-lg font-semibold text-amber-400 mb-4">Dimensions</h3>
+              <div className="card-vercel p-6">
+                <h3 className="text-sm font-semibold text-amber-400 mb-4 uppercase tracking-wider">Dimensions</h3>
                 <dl className="space-y-3">
                   {part.dimensions.map((dim) => (
-                    <div key={dim.label} className="flex justify-between">
-                      <dt className="text-slate-400">{dim.label}</dt>
+                    <div key={dim.label} className="flex justify-between text-sm">
+                      <dt className="text-neutral-500">{dim.label}</dt>
                       <dd className="text-white font-medium">{dim.value}</dd>
                     </div>
                   ))}
@@ -192,4 +164,3 @@ export default async function PartDetailPage({ params }: { params: Promise<{ par
     </>
   );
 }
-
