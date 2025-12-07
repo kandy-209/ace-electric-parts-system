@@ -1,38 +1,50 @@
 import Link from 'next/link';
+import ScrollReveal from '@/components/ScrollReveal';
+import ParticleBackground from '@/components/ParticleBackground';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      <ParticleBackground />
+      
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Effects */}
-        <div className="absolute inset-0 bg-grid opacity-50" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-amber-500/10 rounded-full blur-[128px]" />
+        <div className="absolute inset-0 bg-grid opacity-30" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-amber-500/10 rounded-full blur-[128px] animate-pulse" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[80px]" />
         
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/5 border border-white/10 text-sm text-neutral-400 animate-fade-in">
-            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            Serving California Since 1985
-          </div>
+          <ScrollReveal delay={0}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-white/5 border border-white/10 text-sm text-neutral-400 hover:bg-white/10 transition-all backdrop-blur-sm">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              Serving California Since 1985
+            </div>
+          </ScrollReveal>
 
           {/* Main Headline */}
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <span className="gradient-text">Industrial</span>
-            <br />
-            <span className="gradient-text-amber">Power Solutions</span>
-          </h1>
+          <ScrollReveal delay={100}>
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
+              <span className="gradient-text inline-block hover:scale-105 transition-transform">Industrial</span>
+              <br />
+              <span className="gradient-text-amber inline-block hover:scale-105 transition-transform">Power Solutions</span>
+            </h1>
+          </ScrollReveal>
 
           {/* Subtitle */}
-          <p className="text-lg sm:text-xl text-neutral-400 max-w-2xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            Premium electric motors, pumps, and gearboxes.
-            <br className="hidden sm:block" />
-            Expert repair services with 24/7 emergency support.
-          </p>
+          <ScrollReveal delay={200}>
+            <p className="text-lg sm:text-xl text-neutral-400 max-w-2xl mx-auto mb-12 leading-relaxed">
+              Premium electric motors, pumps, and gearboxes.
+              <br className="hidden sm:block" />
+              Expert repair services with 24/7 emergency support.
+            </p>
+          </ScrollReveal>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <ScrollReveal delay={300}>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/parts"
               className="btn-primary text-base px-8 py-4 flex items-center gap-2"
@@ -49,6 +61,7 @@ export default function HomePage() {
               Request Quote
             </Link>
           </div>
+          </ScrollReveal>
         </div>
 
         {/* Scroll Indicator */}
@@ -60,19 +73,21 @@ export default function HomePage() {
       </section>
 
       {/* Services Section */}
-      <section className="relative py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-neutral-950" />
-        <div className="absolute inset-0 bg-grid opacity-30" />
+      <section className="relative py-32 overflow-hidden border-t border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
+        <div className="absolute inset-0 bg-grid opacity-20" />
         
         <div className="relative z-10 max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <p className="text-amber-500 font-medium mb-4">What We Offer</p>
-            <h2 className="text-3xl sm:text-5xl font-bold gradient-text">
-              Complete Industrial Solutions
-            </h2>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-amber-500 font-medium mb-4 text-sm uppercase tracking-wider">What We Offer</p>
+              <h2 className="text-3xl sm:text-5xl font-bold gradient-text">
+                Complete Industrial Solutions
+              </h2>
+            </div>
+          </ScrollReveal>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: '⚡',
@@ -110,26 +125,27 @@ export default function HomePage() {
                 description: 'Round-the-clock support for critical equipment failures.',
                 href: '/contact',
               },
-            ].map((service) => (
-              <Link
-                key={service.title}
-                href={service.href}
-                className="group card-vercel p-6 glow-amber-hover"
-              >
-                <span className="text-3xl mb-4 block">{service.icon}</span>
-                <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors">
-                  {service.title}
-                </h3>
-                <p className="text-sm text-neutral-500 leading-relaxed">
-                  {service.description}
-                </p>
-                <div className="mt-4 text-amber-500 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                  Learn more
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
-              </Link>
+            ].map((service, index) => (
+              <ScrollReveal key={service.title} delay={index * 50}>
+                <Link
+                  href={service.href}
+                  className="group card-vercel p-6 glow-amber-hover hover-gradient-border block"
+                >
+                  <span className="text-4xl mb-4 block transform group-hover:scale-110 transition-transform">{service.icon}</span>
+                  <h3 className="text-lg font-semibold text-white mb-3 group-hover:text-amber-400 transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm text-neutral-500 leading-relaxed mb-4">
+                    {service.description}
+                  </p>
+                  <div className="text-amber-500 text-sm font-medium opacity-0 group-hover:opacity-100 transition-all flex items-center gap-2 transform group-hover:translate-x-1">
+                    Learn more
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </div>
+                </Link>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -146,29 +162,35 @@ export default function HomePage() {
               { value: '50K+', label: 'Parts in Stock' },
               { value: '24/7', label: 'Emergency Support' },
               { value: '98%', label: 'Customer Satisfaction' },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-4xl sm:text-5xl font-bold text-amber-400 mb-2">{stat.value}</p>
-                <p className="text-sm text-neutral-500">{stat.label}</p>
-              </div>
+            ].map((stat, index) => (
+              <ScrollReveal key={stat.label} delay={index * 100}>
+                <div className="text-center group">
+                  <p className="text-4xl sm:text-5xl font-bold text-amber-400 mb-2 transform group-hover:scale-110 transition-transform text-glow">
+                    {stat.value}
+                  </p>
+                  <p className="text-sm text-neutral-500 font-medium">{stat.label}</p>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32">
+      <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0 bg-black" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[80px]" />
         
-        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-3xl sm:text-5xl font-bold gradient-text mb-6">
-            Ready to Get Started?
-          </h2>
-          <p className="text-lg text-neutral-400 mb-10">
-            Our AI-powered system finds the right part in seconds.
-            <br />Or talk to our experts for custom solutions.
-          </p>
+        <ScrollReveal>
+          <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
+            <h2 className="text-3xl sm:text-5xl font-bold gradient-text mb-6">
+              Ready to Get Started?
+            </h2>
+            <p className="text-lg text-neutral-400 mb-10 leading-relaxed">
+              Our AI-powered system finds the right part in seconds.
+              <br />Or talk to our experts for custom solutions.
+            </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="tel:+12095551234"
@@ -186,7 +208,8 @@ export default function HomePage() {
               Submit RFQ Online
             </Link>
           </div>
-        </div>
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* Footer */}
