@@ -24,6 +24,12 @@ export default function Navigation() {
     { href: '/contact', label: 'Contact' },
   ];
 
+  const salesItems = [
+    { href: '/sales/dashboard', label: 'Dashboard' },
+    { href: '/sales/rfq', label: 'Create RFQ' },
+    { href: '/sales/marketplace', label: 'Marketplace' },
+  ];
+
   return (
     <>
       <nav
