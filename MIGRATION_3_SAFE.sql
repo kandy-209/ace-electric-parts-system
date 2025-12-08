@@ -227,9 +227,6 @@ CREATE TABLE IF NOT EXISTS equipment (
   next_service_date TIMESTAMP,
   service_history JSONB DEFAULT '[]'::jsonb,
   
-  -- Status
-  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'repair', 'retired', 'sold', 'disposed')),
-  
   -- Documents
   manual_url TEXT,
   warranty_url TEXT,
@@ -237,6 +234,19 @@ CREATE TABLE IF NOT EXISTS equipment (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Ensure status column exists on equipment table
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'equipment' AND column_name = 'status'
+    ) THEN
+        ALTER TABLE equipment 
+        ADD COLUMN status TEXT NOT NULL DEFAULT 'active' 
+        CHECK (status IN ('active', 'repair', 'retired', 'sold', 'disposed'));
+    END IF;
+END $$;
 
 -- ============================================================================
 -- NEW TABLES: Contracts & Service Agreements
@@ -724,10 +734,12 @@ CREATE TRIGGER update_employees_updated_at BEFORE UPDATE ON employees FOR EACH R
 -- FUNCTIONS FOR ANALYTICS
 -- ============================================================================
 
--- Function to calculate repair order statistics (only if table exists)
+-- Function to calculate repair order statistics (only if table and status column exist)
 DO $$ 
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'repair_orders') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'repair_orders')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'status')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'total_cost') THEN
         EXECUTE 'CREATE OR REPLACE FUNCTION calculate_repair_stats(p_start_date TIMESTAMP, p_end_date TIMESTAMP)
         RETURNS TABLE (
           total_orders BIGINT,
@@ -790,16 +802,30 @@ END $$;
 -- View: Active repair orders with status summary
 DO $$ 
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'repair_orders') THEN
-        EXECUTE 'CREATE OR REPLACE VIEW active_repair_orders_view AS
-        SELECT 
-          ro.*,
-          COUNT(rp.repair_part_id) as parts_count,
-          COALESCE(SUM(rp.total_cost), 0) as parts_total_cost
-        FROM repair_orders ro
-        LEFT JOIN repair_parts rp ON ro.repair_order_id = rp.repair_order_id
-        WHERE ro.status NOT IN (''completed'', ''cancelled'', ''delivered'')
-        GROUP BY ro.repair_order_id';
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'repair_orders')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'repair_order_id') THEN
+        -- Check if status column exists
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'status') THEN
+            EXECUTE 'CREATE OR REPLACE VIEW active_repair_orders_view AS
+            SELECT 
+              ro.*,
+              COUNT(rp.repair_part_id) as parts_count,
+              COALESCE(SUM(rp.total_cost), 0) as parts_total_cost
+            FROM repair_orders ro
+            LEFT JOIN repair_parts rp ON ro.repair_order_id = rp.repair_order_id
+            WHERE ro.status NOT IN (''completed'', ''cancelled'', ''delivered'')
+            GROUP BY ro.repair_order_id';
+        ELSE
+            -- Create view without status filter if status column doesn't exist
+            EXECUTE 'CREATE OR REPLACE VIEW active_repair_orders_view AS
+            SELECT 
+              ro.*,
+              COUNT(rp.repair_part_id) as parts_count,
+              COALESCE(SUM(rp.total_cost), 0) as parts_total_cost
+            FROM repair_orders ro
+            LEFT JOIN repair_parts rp ON ro.repair_order_id = rp.repair_order_id
+            GROUP BY ro.repair_order_id';
+        END IF;
     END IF;
 END $$;
 
@@ -807,7 +833,11 @@ END $$;
 DO $$ 
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'inventory')
-       AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'parts') THEN
+       AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'parts')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'inventory' AND column_name = 'part_id')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'inventory' AND column_name = 'quantity_on_hand')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'inventory' AND column_name = 'reorder_point')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'parts' AND column_name = 'part_id') THEN
         EXECUTE 'CREATE OR REPLACE VIEW inventory_summary_view AS
         SELECT 
           i.*,
@@ -827,23 +857,46 @@ END $$;
 -- View: Equipment service schedule
 DO $$ 
 BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'equipment') THEN
-        EXECUTE 'CREATE OR REPLACE VIEW equipment_service_schedule_view AS
-        SELECT 
-          e.*,
-          c.company_name as customer_name,
-          CASE 
-            WHEN e.next_service_date IS NULL THEN ''no_schedule''
-            WHEN e.next_service_date < NOW() THEN ''overdue''
-            WHEN e.next_service_date <= NOW() + INTERVAL ''30 days'' THEN ''due_soon''
-            ELSE ''scheduled''
-          END as service_status,
-          EXTRACT(DAYS FROM (e.next_service_date - NOW())) as days_until_service
-        FROM equipment e
-        LEFT JOIN customers c ON e.customer_id = c.customer_id
-        WHERE e.status = ''active''
-          AND e.next_service_date IS NOT NULL
-        ORDER BY e.next_service_date ASC';
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'equipment')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'next_service_date')
+       AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'customer_id') THEN
+        -- Check if status column exists
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'status') THEN
+            -- Create view WITH status filter
+            EXECUTE 'CREATE OR REPLACE VIEW equipment_service_schedule_view AS
+            SELECT 
+              e.*,
+              c.company_name as customer_name,
+              CASE 
+                WHEN e.next_service_date IS NULL THEN ''no_schedule''
+                WHEN e.next_service_date < NOW() THEN ''overdue''
+                WHEN e.next_service_date <= NOW() + INTERVAL ''30 days'' THEN ''due_soon''
+                ELSE ''scheduled''
+              END as service_status,
+              EXTRACT(DAYS FROM (e.next_service_date - NOW())) as days_until_service
+            FROM equipment e
+            LEFT JOIN customers c ON e.customer_id = c.customer_id
+            WHERE e.status = ''active''
+              AND e.next_service_date IS NOT NULL
+            ORDER BY e.next_service_date ASC';
+        ELSE
+            -- Create view WITHOUT status filter if status column doesn't exist
+            EXECUTE 'CREATE OR REPLACE VIEW equipment_service_schedule_view AS
+            SELECT 
+              e.*,
+              c.company_name as customer_name,
+              CASE 
+                WHEN e.next_service_date IS NULL THEN ''no_schedule''
+                WHEN e.next_service_date < NOW() THEN ''overdue''
+                WHEN e.next_service_date <= NOW() + INTERVAL ''30 days'' THEN ''due_soon''
+                ELSE ''scheduled''
+              END as service_status,
+              EXTRACT(DAYS FROM (e.next_service_date - NOW())) as days_until_service
+            FROM equipment e
+            LEFT JOIN customers c ON e.customer_id = c.customer_id
+            WHERE e.next_service_date IS NOT NULL
+            ORDER BY e.next_service_date ASC';
+        END IF;
     END IF;
 END $$;
 
