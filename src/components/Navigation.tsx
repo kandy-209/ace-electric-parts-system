@@ -71,7 +71,7 @@ export default function Navigation() {
             {/* Right Side */}
             <div className="flex items-center gap-2 sm:gap-3">
               <a
-                href="tel:+12095551234"
+                href="tel:+12094646428"
                 className="hidden sm:flex items-center gap-2 px-3 lg:px-4 py-2 text-sm font-medium text-black bg-gradient-to-r from-amber-400 to-amber-500 rounded-lg hover:from-amber-300 hover:to-amber-400 transition-all min-h-[36px]"
                 aria-label="Call us"
               >

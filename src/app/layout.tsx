@@ -64,7 +64,7 @@ const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Ace Electric Motor and Pump Company',
-  telephone: '+1-209-555-1234',
+  telephone: '+1-209-464-6428',
   address: {
     '@type': 'PostalAddress',
     streetAddress: '123 Industrial Way',
