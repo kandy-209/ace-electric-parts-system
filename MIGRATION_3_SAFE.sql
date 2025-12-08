@@ -649,14 +649,25 @@ BEGIN
 END $$;
 CREATE INDEX IF NOT EXISTS idx_import_records_job ON import_records(import_job_id);
 
--- Add foreign key constraint for import_records AFTER table is created
+-- Add foreign key constraint for import_records AFTER tables and columns exist
 DO $$ 
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.table_constraints 
-        WHERE constraint_name = 'import_records_import_job_id_fkey'
-        AND table_name = 'import_records'
-    ) THEN
+    -- Check that both tables exist and columns exist with correct types
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'import_jobs') 
+       AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'import_records')
+       AND EXISTS (
+           SELECT 1 FROM information_schema.columns 
+           WHERE table_name = 'import_jobs' AND column_name = 'import_job_id' AND data_type = 'uuid'
+       )
+       AND EXISTS (
+           SELECT 1 FROM information_schema.columns 
+           WHERE table_name = 'import_records' AND column_name = 'import_job_id' AND data_type = 'uuid'
+       )
+       AND NOT EXISTS (
+           SELECT 1 FROM information_schema.table_constraints 
+           WHERE constraint_name = 'import_records_import_job_id_fkey'
+           AND table_name = 'import_records'
+       ) THEN
         ALTER TABLE import_records 
         ADD CONSTRAINT import_records_import_job_id_fkey 
         FOREIGN KEY (import_job_id) 
