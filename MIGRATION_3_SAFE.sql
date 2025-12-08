@@ -462,48 +462,76 @@ BEGIN
     END IF;
 END $$;
 
--- Add foreign key constraint for equipment.customer_id AFTER customers table exists
+-- Add foreign key constraints AFTER customers table exists and types match
 DO $$ 
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'customers') THEN
-        -- Equipment FK
-        IF NOT EXISTS (
-            SELECT 1 FROM information_schema.table_constraints 
-            WHERE constraint_name = 'equipment_customer_id_fkey' AND table_name = 'equipment'
+        -- Check that customers.customer_id is UUID
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'customers' 
+            AND column_name = 'customer_id' 
+            AND data_type = 'uuid'
         ) THEN
-            ALTER TABLE equipment 
-            ADD CONSTRAINT equipment_customer_id_fkey 
-            FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
-        END IF;
-        
-        -- Repair orders FK
-        IF NOT EXISTS (
-            SELECT 1 FROM information_schema.table_constraints 
-            WHERE constraint_name = 'repair_orders_customer_id_fkey' AND table_name = 'repair_orders'
-        ) THEN
-            ALTER TABLE repair_orders 
-            ADD CONSTRAINT repair_orders_customer_id_fkey 
-            FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
-        END IF;
-        
-        -- Service contracts FK
-        IF NOT EXISTS (
-            SELECT 1 FROM information_schema.table_constraints 
-            WHERE constraint_name = 'service_contracts_customer_id_fkey' AND table_name = 'service_contracts'
-        ) THEN
-            ALTER TABLE service_contracts 
-            ADD CONSTRAINT service_contracts_customer_id_fkey 
-            FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
-        END IF;
-        
-        -- Shop quotes FK
-        IF NOT EXISTS (
-            SELECT 1 FROM information_schema.table_constraints 
-            WHERE constraint_name = 'shop_quotes_customer_id_fkey' AND table_name = 'shop_quotes'
-        ) THEN
-            ALTER TABLE shop_quotes 
-            ADD CONSTRAINT shop_quotes_customer_id_fkey 
-            FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            -- Equipment FK (check types match)
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'equipment' 
+                AND column_name = 'customer_id' 
+                AND data_type = 'uuid'
+            ) AND NOT EXISTS (
+                SELECT 1 FROM information_schema.table_constraints 
+                WHERE constraint_name = 'equipment_customer_id_fkey' AND table_name = 'equipment'
+            ) THEN
+                ALTER TABLE equipment 
+                ADD CONSTRAINT equipment_customer_id_fkey 
+                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            END IF;
+            
+            -- Repair orders FK (check types match)
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'repair_orders' 
+                AND column_name = 'customer_id' 
+                AND data_type = 'uuid'
+            ) AND NOT EXISTS (
+                SELECT 1 FROM information_schema.table_constraints 
+                WHERE constraint_name = 'repair_orders_customer_id_fkey' AND table_name = 'repair_orders'
+            ) THEN
+                ALTER TABLE repair_orders 
+                ADD CONSTRAINT repair_orders_customer_id_fkey 
+                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            END IF;
+            
+            -- Service contracts FK (check types match)
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'service_contracts' 
+                AND column_name = 'customer_id' 
+                AND data_type = 'uuid'
+            ) AND NOT EXISTS (
+                SELECT 1 FROM information_schema.table_constraints 
+                WHERE constraint_name = 'service_contracts_customer_id_fkey' AND table_name = 'service_contracts'
+            ) THEN
+                ALTER TABLE service_contracts 
+                ADD CONSTRAINT service_contracts_customer_id_fkey 
+                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            END IF;
+            
+            -- Shop quotes FK (check types match)
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name = 'shop_quotes' 
+                AND column_name = 'customer_id' 
+                AND data_type = 'uuid'
+            ) AND NOT EXISTS (
+                SELECT 1 FROM information_schema.table_constraints 
+                WHERE constraint_name = 'shop_quotes_customer_id_fkey' AND table_name = 'shop_quotes'
+            ) THEN
+                ALTER TABLE shop_quotes 
+                ADD CONSTRAINT shop_quotes_customer_id_fkey 
+                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            END IF;
         END IF;
     END IF;
 END $$;
