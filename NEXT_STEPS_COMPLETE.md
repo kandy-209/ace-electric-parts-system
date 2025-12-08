@@ -1,188 +1,146 @@
-# ✅ Next Steps - Getting Started Guide
+# 🚀 Next Steps - Complete Setup Guide
 
-## 🎯 What We'll Do
+## ✅ What's Done
 
-1. **Add Environment Variables to Vercel** (5 minutes)
-2. **Test Application Locally** (2 minutes)
-3. **Verify Production** (2 minutes)
-4. **Import Initial Data** (optional, when ready)
-
----
-
-## Step 1: Add Environment Variables to Vercel
-
-### Quick Method - Use Vercel Dashboard
-
-1. **Open Vercel Dashboard**:
-   - Go to: https://vercel.com/dashboard
-   - Click on your project: `ace-electric-parts-system`
-
-2. **Navigate to Environment Variables**:
-   - Click **Settings** (top menu)
-   - Click **Environment Variables** (left sidebar)
-
-3. **Add Required Variables**:
-
-   Copy these from your `.env.local` file:
-
-   ```
-   NEXT_PUBLIC_SUPABASE_URL
-   NEXT_PUBLIC_SUPABASE_ANON_KEY
-   SUPABASE_SERVICE_ROLE_KEY
-   ```
-
-   **How to add each:**
-   - Click **Add New**
-   - **Key**: `NEXT_PUBLIC_SUPABASE_URL`
-   - **Value**: `https://xuranenlfkuvufgqxwqe.supabase.co`
-   - **Environments**: Check ✅ Production, ✅ Preview, ✅ Development
-   - Click **Save**
-   - Repeat for other keys
-
-4. **Redeploy**:
-   - Go to **Deployments** tab
-   - Click **⋯** on latest deployment
-   - Click **Redeploy**
+- ✅ **Database Migrations**: All 3 migrations complete (50+ tables)
+- ✅ **GitHub**: Connected and synced
+- ✅ **Vercel**: Deployed and connected to GitHub
+- ✅ **Supabase**: Credentials configured locally
 
 ---
 
-### Alternative - Use Vercel CLI
+## 🎯 Next Steps to Complete
 
-```bash
-# Install Vercel CLI (if not installed)
-npm install -g vercel
+### Step 1: Add Environment Variables to Vercel ⚠️ REQUIRED
 
-# Login
-vercel login
+**Why:** Your production deployment needs these to work.
 
-# Link project (if not linked)
-cd ace-electric-parts-system
-vercel link
+**Quick Method:**
+1. Run: `./scripts/add-vercel-env-vars.sh` (shows what to add)
+2. Or go to: https://vercel.com/andrewkosel93-1443s-projects/ace-electric-parts-system/settings/environment-variables
 
-# Add environment variables
-vercel env add NEXT_PUBLIC_SUPABASE_URL production
-# (paste value when prompted)
+**Variables to Add:**
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon key
+- `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key
+- `OPENAI_API_KEY` - Your OpenAI API key (get from https://platform.openai.com/api-keys)
+- `NEXT_PUBLIC_SITE_URL` - Your Vercel URL (optional)
 
-vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production
-# (paste value when prompted)
-
-vercel env add SUPABASE_SERVICE_ROLE_KEY production
-# (paste value when prompted)
-```
+**After adding:** Go to Deployments → Redeploy
 
 ---
 
-## Step 2: Test Application Locally
+### Step 2: Test Application Locally
 
-**Start development server:**
-
+**Start dev server:**
 ```bash
 npm run dev
 ```
 
-**Open browser:**
-- Go to: http://localhost:3000
+**Test pages:**
+- http://localhost:3000 - Home page
+- http://localhost:3000/parts - Parts catalog
+- http://localhost:3000/rfq - RFQ form
+- http://localhost:3000/sales/dashboard - Sales dashboard
+- http://localhost:3000/admin/dashboard - Admin dashboard
 
-**What to check:**
-- ✅ Home page loads
-- ✅ No errors in browser console
-- ✅ Navigation works
-- ✅ Can access `/parts` page
-- ✅ Can access `/rfq` page
-- ✅ Can access `/admin` pages
-
-**Test database connection:**
+**Test database:**
 ```bash
 npm run test:db
 ```
 
-Should show: ✅ All required tables exist!
-
 ---
 
-## Step 3: Verify Production
+### Step 3: Verify API Endpoints
 
-1. **Check Vercel Deployment**:
-   - Go to: https://vercel.com/dashboard
-   - Click on your project
-   - Check **Deployments** tab
-   - Latest deployment should be ✅ Ready
+**Test these endpoints:**
+- `GET /api/orders` - List orders
+- `GET /api/customers` - List customers
+- `GET /api/vendors` - List vendors
+- `GET /api/rfq/recent` - Recent RFQs
+- `POST /api/rfq/create` - Create RFQ
 
-2. **Visit Production URL**:
-   - Click on the deployment URL
-   - Test that it loads
-   - Check browser console for errors
-
-3. **Test Features**:
-   - Navigate to different pages
-   - Try creating an RFQ
-   - Check parts catalog
-
----
-
-## Step 4: Import Initial Data (When Ready)
-
-### Option A: Via Admin Dashboard
-
-1. **Start dev server**: `npm run dev`
-2. **Go to**: http://localhost:3000/admin/import
-3. **Upload Excel/CSV**:
-   - Select file
-   - Choose import type (parts, vendors, customers)
-   - Click Import
-
-### Option B: Via API
-
-**Import a part:**
+**Test command:**
 ```bash
-curl -X POST http://localhost:3000/api/parts \
-  -H "Content-Type: application/json" \
-  -d '{
-    "part_number": "MTR-215T",
-    "description": "215T Frame Electric Motor",
-    "manufacturer": "Baldor",
-    "category": "Motor"
-  }'
-```
+# Test orders API
+curl http://localhost:3000/api/orders
 
-**Import a vendor:**
-```bash
-curl -X POST http://localhost:3000/api/vendors \
-  -H "Content-Type: application/json" \
-  -d '{
-    "vendor_name": "Example Manufacturer",
-    "email": "contact@example.com",
-    "capabilities": ["motor_repair", "custom_parts"]
-  }'
+# Test customers API
+curl http://localhost:3000/api/customers
 ```
 
 ---
 
-## 📊 Quick Status Check
+### Step 4: Import Initial Data (Optional)
 
-```bash
-# Test database
-npm run test:db
+**Import parts:**
+- Go to: `/admin/import`
+- Upload Excel/CSV file with parts data
+- Or use API: `POST /api/import/excel`
 
-# Check application
-npm run dev
-# Visit http://localhost:3000
-
-# Build for production
-npm run build
-
-# Check for errors
-npm run lint
-```
+**Import vendors:**
+- Use the vendor discovery system
+- Or manually add via admin dashboard
 
 ---
 
-## 🎯 You're Ready!
+### Step 5: Configure Optional Services
 
-Once environment variables are added to Vercel:
-- ✅ Database is set up
-- ✅ Application is deployed
-- ✅ Ready to start using!
+**If you want these features:**
 
-**Next:** Start importing your parts and vendor data to populate the database!
+#### GoHighLevel CRM Integration
+- Get API key from: https://highlevel.com
+- Add to Vercel: `GOHIGHLEVEL_API_KEY`, `GOHIGHLEVEL_LOCATION_ID`
 
+#### Voice Assistant (Vapi.ai)
+- Sign up: https://vapi.ai
+- Add to Vercel: `VAPI_API_KEY`
+
+#### Background Jobs (Inngest)
+- Sign up: https://inngest.com
+- Add to Vercel: `INNGEST_SIGNING_KEY`, `INNGEST_EVENT_KEY`
+
+#### Caching (Upstash Redis)
+- Sign up: https://upstash.com
+- Add to Vercel: `UPSTASH_REDIS_URL`
+
+---
+
+## 🧪 Testing Checklist
+
+- [ ] Database connection works (`npm run test:db`)
+- [ ] Dev server starts (`npm run dev`)
+- [ ] Home page loads
+- [ ] Parts page loads
+- [ ] RFQ form works
+- [ ] API endpoints respond
+- [ ] Vercel deployment works (after env vars added)
+
+---
+
+## 📊 What You Can Do Now
+
+### Immediate:
+1. ✅ Add env vars to Vercel
+2. ✅ Test locally
+3. ✅ Verify APIs work
+
+### Next:
+1. Import parts data
+2. Add vendors
+3. Test RFQ workflow
+4. Configure integrations
+5. Build out ML/AI features
+
+---
+
+## 🆘 Need Help?
+
+- **Environment Variables**: See `VERCEL_ENV_SETUP.md`
+- **API Keys**: See `API_KEYS_GUIDE.md`
+- **Database**: See `MIGRATIONS_COMPLETE.md`
+- **Deployment**: See `DEPLOYMENT_CHECKLIST.md`
+
+---
+
+**Ready to continue? Let's add those Vercel environment variables!** 🚀
