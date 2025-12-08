@@ -404,18 +404,63 @@ CREATE INDEX IF NOT EXISTS idx_inventory_part_id ON inventory(part_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_transactions_inventory_id ON inventory_transactions(inventory_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_transactions_type ON inventory_transactions(transaction_type);
 
-CREATE INDEX IF NOT EXISTS idx_repair_orders_customer ON repair_orders(customer_id);
-CREATE INDEX IF NOT EXISTS idx_repair_orders_status ON repair_orders(status);
-CREATE INDEX IF NOT EXISTS idx_repair_orders_date ON repair_orders(received_date DESC);
+-- Indexes for repair_orders (conditional)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'repair_orders') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'customer_id') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_repair_orders_customer') THEN
+            CREATE INDEX idx_repair_orders_customer ON repair_orders(customer_id);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'status') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_repair_orders_status') THEN
+            CREATE INDEX idx_repair_orders_status ON repair_orders(status);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'received_date') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_repair_orders_date') THEN
+            CREATE INDEX idx_repair_orders_date ON repair_orders(received_date DESC);
+        END IF;
+    END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_repair_parts_repair_order ON repair_parts(repair_order_id);
 
-CREATE INDEX IF NOT EXISTS idx_shop_quotes_customer ON shop_quotes(customer_id);
-CREATE INDEX IF NOT EXISTS idx_shop_quotes_status ON shop_quotes(status);
-CREATE INDEX IF NOT EXISTS idx_shop_quotes_date ON shop_quotes(created_at DESC);
+-- Indexes for shop_quotes (conditional)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'shop_quotes') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shop_quotes' AND column_name = 'customer_id') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_shop_quotes_customer') THEN
+            CREATE INDEX idx_shop_quotes_customer ON shop_quotes(customer_id);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shop_quotes' AND column_name = 'status') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_shop_quotes_status') THEN
+            CREATE INDEX idx_shop_quotes_status ON shop_quotes(status);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shop_quotes' AND column_name = 'created_at') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_shop_quotes_date') THEN
+            CREATE INDEX idx_shop_quotes_date ON shop_quotes(created_at DESC);
+        END IF;
+    END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_equipment_customer ON equipment(customer_id);
-CREATE INDEX IF NOT EXISTS idx_equipment_serial ON equipment(serial_number);
-CREATE INDEX IF NOT EXISTS idx_equipment_status ON equipment(status);
+-- Indexes for equipment (conditional)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'equipment') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'customer_id') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_equipment_customer') THEN
+            CREATE INDEX idx_equipment_customer ON equipment(customer_id);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'serial_number') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_equipment_serial') THEN
+            CREATE INDEX idx_equipment_serial ON equipment(serial_number);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'status') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_equipment_status') THEN
+            CREATE INDEX idx_equipment_status ON equipment(status);
+        END IF;
+    END IF;
+END $$;
 
 -- Add foreign key constraint for equipment.customer_id AFTER customers table exists
 DO $$ 
@@ -463,16 +508,58 @@ BEGIN
     END IF;
 END $$;
 
-CREATE INDEX IF NOT EXISTS idx_service_contracts_customer ON service_contracts(customer_id);
-CREATE INDEX IF NOT EXISTS idx_service_contracts_status ON service_contracts(status);
-CREATE INDEX IF NOT EXISTS idx_service_contracts_dates ON service_contracts(start_date, end_date);
+-- Indexes for service_contracts (conditional)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'service_contracts') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_contracts' AND column_name = 'customer_id') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_service_contracts_customer') THEN
+            CREATE INDEX idx_service_contracts_customer ON service_contracts(customer_id);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_contracts' AND column_name = 'status') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_service_contracts_status') THEN
+            CREATE INDEX idx_service_contracts_status ON service_contracts(status);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_contracts' AND column_name = 'start_date') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_service_contracts_dates') THEN
+            CREATE INDEX idx_service_contracts_dates ON service_contracts(start_date, end_date);
+        END IF;
+    END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_employee_trainings_employee ON employee_trainings(employee_id);
-CREATE INDEX IF NOT EXISTS idx_employee_trainings_course ON employee_trainings(course_id);
-CREATE INDEX IF NOT EXISTS idx_employee_trainings_status ON employee_trainings(status);
+-- Indexes for employee_trainings (conditional)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'employee_trainings') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'employee_trainings' AND column_name = 'employee_id') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_employee_trainings_employee') THEN
+            CREATE INDEX idx_employee_trainings_employee ON employee_trainings(employee_id);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'employee_trainings' AND column_name = 'course_id') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_employee_trainings_course') THEN
+            CREATE INDEX idx_employee_trainings_course ON employee_trainings(course_id);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'employee_trainings' AND column_name = 'status') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_employee_trainings_status') THEN
+            CREATE INDEX idx_employee_trainings_status ON employee_trainings(status);
+        END IF;
+    END IF;
+END $$;
 
-CREATE INDEX IF NOT EXISTS idx_import_jobs_status ON import_jobs(status);
-CREATE INDEX IF NOT EXISTS idx_import_jobs_type ON import_jobs(import_type);
+-- Indexes for import_jobs (conditional)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'import_jobs') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'import_jobs' AND column_name = 'status') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_import_jobs_status') THEN
+            CREATE INDEX idx_import_jobs_status ON import_jobs(status);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'import_jobs' AND column_name = 'import_type') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_import_jobs_type') THEN
+            CREATE INDEX idx_import_jobs_type ON import_jobs(import_type);
+        END IF;
+    END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_import_records_job ON import_records(import_job_id);
 
 -- Add foreign key constraint for import_records AFTER table is created
@@ -491,8 +578,20 @@ BEGIN
     END IF;
 END $$;
 
-CREATE INDEX IF NOT EXISTS idx_scraping_jobs_status ON scraping_jobs(status);
-CREATE INDEX IF NOT EXISTS idx_scraping_jobs_type ON scraping_jobs(job_type);
+-- Indexes for scraping_jobs (conditional)
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'scraping_jobs') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'scraping_jobs' AND column_name = 'status') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_scraping_jobs_status') THEN
+            CREATE INDEX idx_scraping_jobs_status ON scraping_jobs(status);
+        END IF;
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'scraping_jobs' AND column_name = 'job_type') 
+           AND NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_scraping_jobs_type') THEN
+            CREATE INDEX idx_scraping_jobs_type ON scraping_jobs(job_type);
+        END IF;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_quality_tests_equipment ON quality_tests(equipment_id);
 CREATE INDEX IF NOT EXISTS idx_quality_tests_repair_order ON quality_tests(repair_order_id);
@@ -527,101 +626,128 @@ CREATE TRIGGER update_employees_updated_at BEFORE UPDATE ON employees FOR EACH R
 -- FUNCTIONS FOR ANALYTICS
 -- ============================================================================
 
--- Function to calculate repair order statistics
-CREATE OR REPLACE FUNCTION calculate_repair_stats(p_start_date TIMESTAMP, p_end_date TIMESTAMP)
-RETURNS TABLE (
-  total_orders BIGINT,
-  completed_orders BIGINT,
-  total_revenue DECIMAL,
-  average_repair_time_days DECIMAL,
-  average_repair_cost DECIMAL
-) AS $$
+-- Function to calculate repair order statistics (only if table exists)
+DO $$ 
 BEGIN
-  RETURN QUERY
-  SELECT
-    COUNT(*)::BIGINT as total_orders,
-    COUNT(*) FILTER (WHERE ro.status = 'completed')::BIGINT as completed_orders,
-    COALESCE(SUM(ro.total_cost), 0) as total_revenue,
-    COALESCE(AVG(EXTRACT(EPOCH FROM (ro.completed_date - ro.received_date)) / 86400), 0) as average_repair_time_days,
-    COALESCE(AVG(ro.total_cost), 0) as average_repair_cost
-  FROM repair_orders ro
-  WHERE ro.received_date >= p_start_date AND ro.received_date <= p_end_date;
-END;
-$$ LANGUAGE plpgsql;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'repair_orders') THEN
+        EXECUTE 'CREATE OR REPLACE FUNCTION calculate_repair_stats(p_start_date TIMESTAMP, p_end_date TIMESTAMP)
+        RETURNS TABLE (
+          total_orders BIGINT,
+          completed_orders BIGINT,
+          total_revenue DECIMAL,
+          average_repair_time_days DECIMAL,
+          average_repair_cost DECIMAL
+        ) AS $func$
+        BEGIN
+          RETURN QUERY
+          SELECT
+            COUNT(*)::BIGINT as total_orders,
+            COUNT(*) FILTER (WHERE ro.status = ''completed'')::BIGINT as completed_orders,
+            COALESCE(SUM(ro.total_cost), 0) as total_revenue,
+            COALESCE(AVG(EXTRACT(EPOCH FROM (ro.completed_date - ro.received_date)) / 86400), 0) as average_repair_time_days,
+            COALESCE(AVG(ro.total_cost), 0) as average_repair_cost
+          FROM repair_orders ro
+          WHERE ro.received_date >= p_start_date AND ro.received_date <= p_end_date;
+        END;
+        $func$ LANGUAGE plpgsql';
+    END IF;
+END $$;
 
--- Function to check inventory levels and generate reorder alerts
-CREATE OR REPLACE FUNCTION check_inventory_alerts()
-RETURNS TABLE (
-  inventory_id UUID,
-  part_id UUID,
-  part_number TEXT,
-  quantity_on_hand INTEGER,
-  reorder_point INTEGER,
-  quantity_needed INTEGER
-) AS $$
+-- Function to check inventory levels and generate reorder alerts (only if tables exist)
+DO $$ 
 BEGIN
-  RETURN QUERY
-  SELECT
-    i.inventory_id,
-    i.part_id,
-    p.part_number,
-    i.quantity_on_hand,
-    i.reorder_point,
-    GREATEST(0, i.reorder_point - i.quantity_on_hand) as quantity_needed
-  FROM inventory i
-  JOIN parts p ON i.part_id = p.part_id
-  WHERE i.reorder_point IS NOT NULL
-    AND i.quantity_on_hand <= i.reorder_point;
-END;
-$$ LANGUAGE plpgsql;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'inventory')
+       AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'parts') THEN
+        EXECUTE 'CREATE OR REPLACE FUNCTION check_inventory_alerts()
+        RETURNS TABLE (
+          inventory_id UUID,
+          part_id UUID,
+          part_number TEXT,
+          quantity_on_hand INTEGER,
+          reorder_point INTEGER,
+          quantity_needed INTEGER
+        ) AS $func$
+        BEGIN
+          RETURN QUERY
+          SELECT
+            i.inventory_id,
+            i.part_id,
+            p.part_number,
+            i.quantity_on_hand,
+            i.reorder_point,
+            GREATEST(0, i.reorder_point - i.quantity_on_hand) as quantity_needed
+          FROM inventory i
+          JOIN parts p ON i.part_id = p.part_id
+          WHERE i.reorder_point IS NOT NULL
+            AND i.quantity_on_hand <= i.reorder_point;
+        END;
+        $func$ LANGUAGE plpgsql';
+    END IF;
+END $$;
 
 -- ============================================================================
--- VIEWS FOR COMMON QUERIES
+-- VIEWS FOR COMMON QUERIES (Only create if tables exist)
 -- ============================================================================
 
 -- View: Active repair orders with status summary
-CREATE OR REPLACE VIEW active_repair_orders_view AS
-SELECT 
-  ro.*,
-  COUNT(rp.repair_part_id) as parts_count,
-  COALESCE(SUM(rp.total_cost), 0) as parts_total_cost
-FROM repair_orders ro
-LEFT JOIN repair_parts rp ON ro.repair_order_id = rp.repair_order_id
-WHERE ro.status NOT IN ('completed', 'cancelled', 'delivered')
-GROUP BY ro.repair_order_id;
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'repair_orders') THEN
+        EXECUTE 'CREATE OR REPLACE VIEW active_repair_orders_view AS
+        SELECT 
+          ro.*,
+          COUNT(rp.repair_part_id) as parts_count,
+          COALESCE(SUM(rp.total_cost), 0) as parts_total_cost
+        FROM repair_orders ro
+        LEFT JOIN repair_parts rp ON ro.repair_order_id = rp.repair_order_id
+        WHERE ro.status NOT IN (''completed'', ''cancelled'', ''delivered'')
+        GROUP BY ro.repair_order_id';
+    END IF;
+END $$;
 
 -- View: Inventory summary with part details
-CREATE OR REPLACE VIEW inventory_summary_view AS
-SELECT 
-  i.*,
-  p.part_number,
-  p.description,
-  p.manufacturer,
-  CASE 
-    WHEN i.quantity_on_hand <= 0 THEN 'out_of_stock'
-    WHEN i.reorder_point IS NOT NULL AND i.quantity_on_hand <= i.reorder_point THEN 'low_stock'
-    ELSE 'in_stock'
-  END as stock_status
-FROM inventory i
-JOIN parts p ON i.part_id = p.part_id;
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'inventory')
+       AND EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'parts') THEN
+        EXECUTE 'CREATE OR REPLACE VIEW inventory_summary_view AS
+        SELECT 
+          i.*,
+          p.part_number,
+          p.description,
+          p.manufacturer,
+          CASE 
+            WHEN i.quantity_on_hand <= 0 THEN ''out_of_stock''
+            WHEN i.reorder_point IS NOT NULL AND i.quantity_on_hand <= i.reorder_point THEN ''low_stock''
+            ELSE ''in_stock''
+          END as stock_status
+        FROM inventory i
+        JOIN parts p ON i.part_id = p.part_id';
+    END IF;
+END $$;
 
 -- View: Equipment service schedule
-CREATE OR REPLACE VIEW equipment_service_schedule_view AS
-SELECT 
-  e.*,
-  c.company_name as customer_name,
-  CASE 
-    WHEN e.next_service_date IS NULL THEN 'no_schedule'
-    WHEN e.next_service_date < NOW() THEN 'overdue'
-    WHEN e.next_service_date <= NOW() + INTERVAL '30 days' THEN 'due_soon'
-    ELSE 'scheduled'
-  END as service_status,
-  EXTRACT(DAYS FROM (e.next_service_date - NOW())) as days_until_service
-FROM equipment e
-LEFT JOIN customers c ON e.customer_id = c.customer_id
-WHERE e.status = 'active'
-  AND e.next_service_date IS NOT NULL
-ORDER BY e.next_service_date ASC;
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'equipment') THEN
+        EXECUTE 'CREATE OR REPLACE VIEW equipment_service_schedule_view AS
+        SELECT 
+          e.*,
+          c.company_name as customer_name,
+          CASE 
+            WHEN e.next_service_date IS NULL THEN ''no_schedule''
+            WHEN e.next_service_date < NOW() THEN ''overdue''
+            WHEN e.next_service_date <= NOW() + INTERVAL ''30 days'' THEN ''due_soon''
+            ELSE ''scheduled''
+          END as service_status,
+          EXTRACT(DAYS FROM (e.next_service_date - NOW())) as days_until_service
+        FROM equipment e
+        LEFT JOIN customers c ON e.customer_id = c.customer_id
+        WHERE e.status = ''active''
+          AND e.next_service_date IS NOT NULL
+        ORDER BY e.next_service_date ASC';
+    END IF;
+END $$;
 
 -- ============================================================================
 -- COMMENTS FOR DOCUMENTATION
