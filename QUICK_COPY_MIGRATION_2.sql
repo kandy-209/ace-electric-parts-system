@@ -1,5 +1,3 @@
--- Migration 2: Comprehensive Schema
--- Copy ALL of this into Supabase SQL Editor and run
 -- Comprehensive Database Schema for Ace Electric Parts System
 -- This schema supports all planned APIs and future ML/AI features
 -- Created: December 2025

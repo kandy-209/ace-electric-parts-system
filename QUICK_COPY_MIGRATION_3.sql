@@ -1,5 +1,3 @@
--- Migration 3: Enhanced Schema  
--- Copy ALL of this into Supabase SQL Editor and run
 -- Enhanced Database Schema for Ace Electric Parts System
 -- This migration adds comprehensive tables for orders, customers, inventory, analytics, ML, and more
 
