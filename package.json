@@ -26,7 +26,9 @@
     "lighthouse": "lhci autorun",
     "seo:check": "node scripts/check-seo.js",
     "performance:analyze": "node scripts/analyze-performance.js",
-    "deploy:production": "vercel --prod"
+    "deploy:production": "vercel --prod",
+    "parts:generate-sample": "node scripts/generate-sample-parts.js",
+    "parts:import": "node -e \"const { execSync } = require('child_process'); const file = process.argv[2] || 'data/sample-parts.csv'; execSync(`curl -X POST -F 'file=@${file}' -F 'updateExisting=true' http://localhost:3000/api/parts/import\", { stdio: 'inherit' })\""
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.1",
