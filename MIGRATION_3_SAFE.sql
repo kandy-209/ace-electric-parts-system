@@ -462,8 +462,10 @@ BEGIN
     END IF;
 END $$;
 
--- Add foreign key constraints AFTER customers table exists and types match
+-- Fix column types and add foreign key constraints
 DO $$ 
+DECLARE
+    row_count INTEGER;
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'customers') THEN
         -- Check that customers.customer_id is UUID
@@ -473,64 +475,121 @@ BEGIN
             AND column_name = 'customer_id' 
             AND data_type = 'uuid'
         ) THEN
-            -- Equipment FK (check types match)
-            IF EXISTS (
-                SELECT 1 FROM information_schema.columns 
-                WHERE table_name = 'equipment' 
-                AND column_name = 'customer_id' 
-                AND data_type = 'uuid'
-            ) AND NOT EXISTS (
-                SELECT 1 FROM information_schema.table_constraints 
-                WHERE constraint_name = 'equipment_customer_id_fkey' AND table_name = 'equipment'
-            ) THEN
-                ALTER TABLE equipment 
-                ADD CONSTRAINT equipment_customer_id_fkey 
-                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            -- Fix equipment.customer_id type if needed
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'customer_id') THEN
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'equipment' AND column_name = 'customer_id' AND data_type = 'text') THEN
+                    -- Check if table has data
+                    EXECUTE 'SELECT COUNT(*) FROM equipment' INTO row_count;
+                    IF row_count = 0 THEN
+                        -- Empty table, safe to alter type
+                        ALTER TABLE equipment ALTER COLUMN customer_id TYPE UUID USING NULL;
+                    ELSIF row_count > 0 THEN
+                        -- Has data, try to convert if possible (UUIDs as text)
+                        BEGIN
+                            ALTER TABLE equipment ALTER COLUMN customer_id TYPE UUID USING customer_id::uuid;
+                        EXCEPTION WHEN OTHERS THEN
+                            -- Conversion failed, set to NULL or skip FK
+                            ALTER TABLE equipment ALTER COLUMN customer_id TYPE UUID USING NULL;
+                        END;
+                    END IF;
+                END IF;
+                
+                -- Create FK if types match now
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns 
+                    WHERE table_name = 'equipment' AND column_name = 'customer_id' AND data_type = 'uuid'
+                ) AND NOT EXISTS (
+                    SELECT 1 FROM information_schema.table_constraints 
+                    WHERE constraint_name = 'equipment_customer_id_fkey' AND table_name = 'equipment'
+                ) THEN
+                    ALTER TABLE equipment 
+                    ADD CONSTRAINT equipment_customer_id_fkey 
+                    FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+                END IF;
             END IF;
             
-            -- Repair orders FK (check types match)
-            IF EXISTS (
-                SELECT 1 FROM information_schema.columns 
-                WHERE table_name = 'repair_orders' 
-                AND column_name = 'customer_id' 
-                AND data_type = 'uuid'
-            ) AND NOT EXISTS (
-                SELECT 1 FROM information_schema.table_constraints 
-                WHERE constraint_name = 'repair_orders_customer_id_fkey' AND table_name = 'repair_orders'
-            ) THEN
-                ALTER TABLE repair_orders 
-                ADD CONSTRAINT repair_orders_customer_id_fkey 
-                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            -- Fix repair_orders.customer_id type if needed
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'customer_id') THEN
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'repair_orders' AND column_name = 'customer_id' AND data_type = 'text') THEN
+                    EXECUTE 'SELECT COUNT(*) FROM repair_orders' INTO row_count;
+                    IF row_count = 0 THEN
+                        ALTER TABLE repair_orders ALTER COLUMN customer_id TYPE UUID USING NULL;
+                    ELSE
+                        BEGIN
+                            ALTER TABLE repair_orders ALTER COLUMN customer_id TYPE UUID USING customer_id::uuid;
+                        EXCEPTION WHEN OTHERS THEN
+                            ALTER TABLE repair_orders ALTER COLUMN customer_id TYPE UUID USING NULL;
+                        END;
+                    END IF;
+                END IF;
+                
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns 
+                    WHERE table_name = 'repair_orders' AND column_name = 'customer_id' AND data_type = 'uuid'
+                ) AND NOT EXISTS (
+                    SELECT 1 FROM information_schema.table_constraints 
+                    WHERE constraint_name = 'repair_orders_customer_id_fkey' AND table_name = 'repair_orders'
+                ) THEN
+                    ALTER TABLE repair_orders 
+                    ADD CONSTRAINT repair_orders_customer_id_fkey 
+                    FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+                END IF;
             END IF;
             
-            -- Service contracts FK (check types match)
-            IF EXISTS (
-                SELECT 1 FROM information_schema.columns 
-                WHERE table_name = 'service_contracts' 
-                AND column_name = 'customer_id' 
-                AND data_type = 'uuid'
-            ) AND NOT EXISTS (
-                SELECT 1 FROM information_schema.table_constraints 
-                WHERE constraint_name = 'service_contracts_customer_id_fkey' AND table_name = 'service_contracts'
-            ) THEN
-                ALTER TABLE service_contracts 
-                ADD CONSTRAINT service_contracts_customer_id_fkey 
-                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            -- Fix service_contracts.customer_id type if needed
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_contracts' AND column_name = 'customer_id') THEN
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'service_contracts' AND column_name = 'customer_id' AND data_type = 'text') THEN
+                    EXECUTE 'SELECT COUNT(*) FROM service_contracts' INTO row_count;
+                    IF row_count = 0 THEN
+                        ALTER TABLE service_contracts ALTER COLUMN customer_id TYPE UUID USING NULL;
+                    ELSE
+                        BEGIN
+                            ALTER TABLE service_contracts ALTER COLUMN customer_id TYPE UUID USING customer_id::uuid;
+                        EXCEPTION WHEN OTHERS THEN
+                            ALTER TABLE service_contracts ALTER COLUMN customer_id TYPE UUID USING NULL;
+                        END;
+                    END IF;
+                END IF;
+                
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns 
+                    WHERE table_name = 'service_contracts' AND column_name = 'customer_id' AND data_type = 'uuid'
+                ) AND NOT EXISTS (
+                    SELECT 1 FROM information_schema.table_constraints 
+                    WHERE constraint_name = 'service_contracts_customer_id_fkey' AND table_name = 'service_contracts'
+                ) THEN
+                    ALTER TABLE service_contracts 
+                    ADD CONSTRAINT service_contracts_customer_id_fkey 
+                    FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+                END IF;
             END IF;
             
-            -- Shop quotes FK (check types match)
-            IF EXISTS (
-                SELECT 1 FROM information_schema.columns 
-                WHERE table_name = 'shop_quotes' 
-                AND column_name = 'customer_id' 
-                AND data_type = 'uuid'
-            ) AND NOT EXISTS (
-                SELECT 1 FROM information_schema.table_constraints 
-                WHERE constraint_name = 'shop_quotes_customer_id_fkey' AND table_name = 'shop_quotes'
-            ) THEN
-                ALTER TABLE shop_quotes 
-                ADD CONSTRAINT shop_quotes_customer_id_fkey 
-                FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+            -- Fix shop_quotes.customer_id type if needed
+            IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shop_quotes' AND column_name = 'customer_id') THEN
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'shop_quotes' AND column_name = 'customer_id' AND data_type = 'text') THEN
+                    EXECUTE 'SELECT COUNT(*) FROM shop_quotes' INTO row_count;
+                    IF row_count = 0 THEN
+                        ALTER TABLE shop_quotes ALTER COLUMN customer_id TYPE UUID USING NULL;
+                    ELSE
+                        BEGIN
+                            ALTER TABLE shop_quotes ALTER COLUMN customer_id TYPE UUID USING customer_id::uuid;
+                        EXCEPTION WHEN OTHERS THEN
+                            ALTER TABLE shop_quotes ALTER COLUMN customer_id TYPE UUID USING NULL;
+                        END;
+                    END IF;
+                END IF;
+                
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns 
+                    WHERE table_name = 'shop_quotes' AND column_name = 'customer_id' AND data_type = 'uuid'
+                ) AND NOT EXISTS (
+                    SELECT 1 FROM information_schema.table_constraints 
+                    WHERE constraint_name = 'shop_quotes_customer_id_fkey' AND table_name = 'shop_quotes'
+                ) THEN
+                    ALTER TABLE shop_quotes 
+                    ADD CONSTRAINT shop_quotes_customer_id_fkey 
+                    FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+                END IF;
             END IF;
         END IF;
     END IF;
