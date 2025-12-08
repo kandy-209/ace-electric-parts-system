@@ -9,7 +9,7 @@ import { createSupabaseAdmin } from '@/lib/database/supabase-client';
 import { withRateLimit, rateLimiters } from '@/lib/security/rate-limiter';
 import { createAuditLog, auditActions, resourceTypes, extractRequestMetadata } from '@/lib/security/audit-log';
 import { logger } from '@/lib/monitoring/logger';
-import { cache, cacheKey, cached } from '@/lib/cache/redis';
+import { get as cacheGet, set as cacheSet, del as cacheDel, cacheKey } from '@/lib/cache/redis';
 import { captureException } from '@/lib/monitoring/sentry';
 
 export async function GET(request: NextRequest) {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         );
 
         // Try to get from cache
-        const cachedResult = await get(cacheKeyStr);
+        const cachedResult = await cacheGet(cacheKeyStr);
         if (cachedResult) {
           logger.performance('orders_api_cache_hit', Date.now() - startTime);
           
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
         };
 
         // Cache for 5 minutes
-        await set(cacheKeyStr, result, 300);
+        await cacheSet(cacheKeyStr, result, 300);
 
         logger.performance('orders_api_query', Date.now() - startTime, {
           count: result.count,
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
         // This would require order_items table in database
 
         // Invalidate cache
-        await del(cacheKey('orders'));
+        await cacheDel(cacheKey('orders'));
 
         logger.info('Order created', {
           order_id: order.id,
@@ -218,20 +218,4 @@ export async function POST(request: NextRequest) {
       }
     }
   );
-}
-
-// Import cache functions (fix the undefined reference)
-async function get(key: string) {
-  const { get } = await import('@/lib/cache/redis');
-  return get(key);
-}
-
-async function set(key: string, value: any, ttl?: number) {
-  const { set } = await import('@/lib/cache/redis');
-  return set(key, value, ttl);
-}
-
-async function del(key: string) {
-  const { del } = await import('@/lib/cache/redis');
-  return del(key);
 }
